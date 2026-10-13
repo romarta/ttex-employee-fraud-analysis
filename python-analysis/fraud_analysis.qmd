@@ -339,7 +339,7 @@ fuel_stats = (
     .round(2)
 )
 
-fuel_stats.style.hide(axis="index").format(precision=2).set_caption("Fuel Consumption per 100 km per car")
+fuel_stats.style.format(precision=2).set_caption("Fuel Consumption per 100 km per car")
 
 ```
 
