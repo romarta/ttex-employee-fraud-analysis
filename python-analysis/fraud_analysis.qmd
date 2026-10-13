@@ -1,0 +1,455 @@
+---
+title: "TTex Employee Fraud Analysis"
+format:
+  pdf:
+    toc: true
+    number-sections: false
+    toc-title: "Table of Contents"
+    keep-tex: true
+    geometry:
+      - top=2.0cm
+      - bottom=2.0cm
+      - left=2.5cm
+      - right=2.5cm
+      - footskip=0.7cm 
+jupyter: python3
+---
+
+## 1. Executive Summary
+
+This analysis focuses on analyzing company vehicle usage, trip distances, and fuel consumption to identify potential irregularities and assess data quality.
+Data from 64 files was cleaned, validated, and merged into a single dataset. The analysis included verifying employee and vehicle activity periods, examining trip distances, and evaluating fuel consumption patterns.
+
+The analysis identified 30 trips with potentially unusual distances and significant fuel consumption discrepancies, particularly involving two employees from the Transport Department using a Fiat Ducato and a Ford Transit.
+
+The findings highlight potential data quality issues and possible overreporting of fuel consumption that require further investigation.
+
+## 2. Problem And Objectives
+
+The company needs to ensure the accuracy of its vehicle usage records and identify potential irregularities in reported trip distances and fuel consumption.
+
+The main objectives of the analysis were to:
+- Trip distance analysis: Identify unusual distances between the same locations and detect potentially inaccurate trip records.
+- Fuel consumption analysis: Evaluate fuel efficiency across vehicles and identify unusually high reported fuel consumption.
+- Employee activity verification: Ensure that trips were made by active employees using active company vehicles.
+- Risk identification: Highlight potentially suspicious trips, vehicles, and employees requiring further investigation.
+
+The ultimate goal is to identify potential operational inefficiencies, and support better control of company vehicle usage and fuel expenses.
+
+## 3. Data Validatiion And Peparation
+
+Data from all weeks (64 files in total) was combined into five separate DataFrames: df_department, df_position, df_employee, df_car and df_trip. Duplicates resulting from the concatenation of the files were removed. The correctness of the data types was verified. After data cleaning, the suffix "\_clean" was added to the names of all DataFrames.
+
+1.  The **df_department** DataFrame contains 5 unique records, each representing an organizational department and consisting of three fields: id, name, and description.
+2.  The **df_position** DataFrame contains 36 unique records, the IDs and names of job positions within the company.
+3.  The **df_employee** DataFrame contains 36 unique records with employee information, including first names, last names, gender, department IDs, position IDs, dates of birth, hire dates, and employment termination dates.
+4.  The **df_car** DataFrame contains 20 unique records related to vehicles used within the company. It includes the following columns: car ID, brand, model, year of manufacture, fuel type, transport usage, activity status, activity start date, and activity end date. Missing values were identified in the activity status column and filled with appropriate values based on the activity dates.
+5.  The **df_trip** DataFrame contains trip IDs, start and end dates, car IDs, employee IDs, distance traveled, fuel consumption, and start and end locations. The DataFrame contained no duplicate records. Incorrect values in the from and to columns were corrected. After data cleaning, 13 unique locations remained in these columns, including cities and other places, such as offices and shops.
+
+Finally, all cleaned DataFrames were merged into a single DataFrame named df_total, as shown below.
+
+```{python}
+#| echo: false
+#| include: false
+
+import pandas as pd
+import numpy as np
+from pathlib import Path
+
+```
+
+```{python}
+#| echo: false
+#| include: false
+
+data_dir = Path("../data")
+
+files = sorted(data_dir.glob("TTex_*.xlsx"))
+
+sheets = ["Department", "Positon", "Employee", "Car", "Trip"]
+
+data = {sheet: [] for sheet in sheets}
+
+for file in files:
+    excel_data = pd.read_excel(file, sheet_name=sheets)
+
+    for sheet in sheets:
+        data[sheet].append(excel_data[sheet])
+
+df_department = pd.concat(data["Department"], ignore_index=True)
+df_position = pd.concat(data["Positon"], ignore_index=True)
+df_employee = pd.concat(data["Employee"], ignore_index=True)
+df_car = pd.concat(data["Car"], ignore_index=True)
+df_trip = pd.concat(data["Trip"], ignore_index=True)
+
+```
+
+```{python}
+#| echo: false
+#| include: false
+df_department_clean = df_department.drop_duplicates().reset_index(drop=True)
+
+df_position_clean = df_position.drop_duplicates().reset_index(drop=True)
+
+df_employee_clean = df_employee.drop_duplicates().reset_index(drop=True)
+
+df_car_clean = df_car.drop_duplicates().reset_index(drop=True)
+
+df_car_clean.loc[df_car_clean['active'].isna() & df_car_clean['active_to'].isna(), 'active'] = 'Yes'
+
+df_trip_clean = df_trip.drop_duplicates().reset_index(drop=True)
+
+```
+
+```{python}
+#| echo: false
+#| include: false
+mapping_from = {
+    'Torun': 'Toruń',
+    'Mikolajki': 'Mikołajki',
+    'Ost': 'Ostróda',
+    'Ostruda': 'Ostróda',
+    'Bar': 'Bartoszyce',
+    'Szc': 'Szczecin',
+    'Malbrk': 'Malbork',
+    'Bartosyce': 'Bartoszyce',
+    'Byd': 'Bydgoszcz',
+    'W-wa': 'Warszawa',
+    'Gda': 'Gdańsk',
+    'Mik': 'Mikołajki',
+    'Warsawa': 'Warszawa',
+    'Gdansk': 'Gdańsk',
+    'Elblag': 'Elbląg',
+    'Ostroda': 'Ostróda'
+}
+
+df_trip_clean['from'] = df_trip_clean['from'].replace(mapping_from)
+df_trip_clean['to'] = df_trip_clean['to'].replace(mapping_from)
+
+```
+
+```{python}
+#| echo: false
+#| include: false
+
+df_trip_car = pd.merge(df_trip_clean.add_prefix('trip_'), df_car_clean.add_prefix('car_'), left_on='trip_car', right_on='car_id', how='left')
+
+df_trip_car = df_trip_car.drop(columns=['car_id', 'trip_car'])
+
+df_trip_car_employee = pd.merge(df_trip_car, df_employee_clean.add_prefix('employee_'), left_on='trip_employee', right_on='employee_id', how='left')
+
+df_trip_car_employee = df_trip_car_employee.drop(columns=['trip_employee', 'employee_id'])
+
+df_trip_car_employee_position = pd.merge(df_trip_car_employee, df_position_clean.add_prefix('position_'), left_on='employee_position', right_on='position_id', how='left')
+
+df_trip_car_employee_position = df_trip_car_employee_position.drop(columns=['employee_position', 'position_id'])
+
+df_trip_car_employee_position.rename(columns={'position_name': 'employee_position_name'}, inplace=True)
+
+df_total = pd.merge(df_trip_car_employee_position, df_department_clean.add_prefix('employee_department_'), left_on='employee_department', right_on='employee_department_id', how='left')
+
+df_total = df_total.drop(columns=['employee_department', 'employee_department_id'])
+
+```
+
+```{python}
+#| echo: false
+#| include: true
+df_dtypes = (
+    df_total.dtypes
+    .reset_index()
+    .rename(columns={
+        "index": "column",
+        0: "dtype"
+    })
+)
+
+df_dtypes.style.hide(axis="index").set_caption("Total DataFrame Structure")
+```
+
+```{python}
+#| echo: false
+#| include: true
+print('Shape:', df_total.shape)
+
+```
+
+
+## 4. Exploratory Data Analysis
+
+```{python}
+#| echo: false
+#| include: false
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+
+sns.set_style(style="whitegrid")
+```
+
+A total of 443 trips were completed. Trip **distances** ranged from 3 km (between Olsztyn and the shop or office) to 576 km (between Szczecin and Olsztyn), with an average distance of 150.34 km.
+
+```{python}
+#| echo: false
+#| fig-align: center
+#| fig-cap: "Distribution of Trip Distances"
+#| out-width: 60%
+
+fig, ax = plt.subplots(figsize=(6, 4))
+
+sns.histplot(
+    data=df_total,
+    x="trip_distance",
+    bins=30,
+    ax=ax
+)
+
+plt.tight_layout()
+plt.show()
+```
+
+
+The **trip dates were validated and found to be consistent**. In all cases, the trip start date was earlier than or equal to the end date.
+
+No **trips involving inactive vehicles were detected**, i.e., trips that started after the vehicle's activity end date or started before that date but ended after it.
+
+No trips made by employees before their employment start date or after their employment end date were detected.
+
+Most intercity routes show a very similar relative range of distances, approximately 7–8%. 
+\vspace{1cm}
+
+```{python}
+#| echo: false
+#| include: true
+
+df_total['route'] = np.where(
+    df_total['trip_from'] < df_total['trip_to'],
+    df_total['trip_from'] + ' ↔ ' + df_total['trip_to'],
+    df_total['trip_to'] + ' ↔ ' + df_total['trip_from']
+)
+
+(
+    df_total.groupby('route')['trip_distance']
+    .describe()
+    .round(2)
+    .reset_index()
+    .style
+    .hide(axis="index")
+    .format(precision=2)
+    .set_caption("Descriptive Statistics of Trip Distances by Route")
+)
+```
+
+The median distance was calculated for each route, and trips exceeding the median distance by more than 10% were identified. A total of 30 potentially suspicious trips were identified.
+
+```{python}
+#| echo: false
+#| include: false
+
+# Mediana długości dla każdej trasy
+df_total["route_median"] = (
+    df_total.groupby("route")["trip_distance"]
+    .transform("median")
+)
+
+# Procentowe odchylenie od mediany
+df_total["distance_deviation_pct"] = (
+    (df_total["trip_distance"] - df_total["route_median"])
+    / df_total["route_median"]
+    * 100
+)
+
+suspicious_trips = df_total[
+    df_total["distance_deviation_pct"] > 10
+]
+```
+
+```{python}
+#| echo: false
+#| include: true
+
+# Kolumny definiujące identyczny przejazd
+group_cols = [
+    "route",
+    "trip_distance",
+    "route_median",
+    "distance_deviation_pct",
+    "employee_name",
+    "employee_surname"
+]
+
+# Grupowanie i zliczanie identycznych przejazdów
+df_suspicious_trips = (
+    suspicious_trips
+    .groupby(group_cols, dropna=False)
+    .agg(
+        count=("trip_id", "count")
+    )
+    .reset_index()
+    .sort_values("distance_deviation_pct", ascending=False)
+)
+
+# Zmiana nazw kolumn
+df_suspicious_trips = df_suspicious_trips.rename(columns={
+    "trip_distance": "distance",
+    "route_median": "Mdn",
+    "distance_deviation_pct": "Mdn_dev",
+    "employee_name": "E_name",
+    "employee_surname": "E_surname"
+})
+
+# Zaokrąglenie wartości
+df_suspicious_trips = df_suspicious_trips.round({
+    "distance": 0,
+    "Mdn": 0,
+    "Mdn_dev": 2
+})
+
+df_suspicious_trips.style.hide(axis="index").format(precision=2).set_caption("Suspicious Trips")
+```
+\scriptsize Legend: Mdn - median, Mdn\_dev - distance deviation pct, E - employee.\
+
+
+\vspace{0.5cm}
+\normalsize 
+The **average fuel consumption per 100 km** was calculated for each vehicle used. The minimum and maximum values differ significantly from the mean and median, which may indicate substantial inaccuracies in the reported fuel consumption data. **A threshold of 50% above the median fuel consumption for each vehicle** was adopted as an indicator of potentially incorrect fuel consumption values for individual trips. As a result, **670 trips with potential irregularities were identified**.
+
+```{python}
+#| echo: false
+#| include: true
+
+df_total["fuel_per_100km"] = np.where(
+    df_total["trip_distance"] > 0,
+    df_total["trip_fuel"] / df_total["trip_distance"] * 100,
+    np.nan
+)
+
+car_cols = [
+    "car_brand",
+    "car_model",
+    "car_year",
+    "car_fuel_type"
+]
+
+fuel_stats = (
+    df_total
+    .groupby(car_cols)["fuel_per_100km"]
+    .agg(["count", "mean", "median", "std", "min", "max"])
+    .round(2)
+)
+
+fuel_stats.style.hide(axis="index").format(precision=2).set_caption("Fuel Consumption per 100 km per car")
+
+```
+
+
+```{python}
+#| echo: false
+#| include: false
+df_total["car_fuel_median"] = (
+    df_total
+    .groupby(car_cols)["fuel_per_100km"]
+    .transform("median")
+)
+
+df_total["fuel_deviation_pct"] = (
+    (df_total["fuel_per_100km"] - df_total["car_fuel_median"])
+    / df_total["car_fuel_median"]
+    * 100
+)
+
+suspicious_fuel = df_total[
+    (df_total["fuel_deviation_pct"] > 50)
+    & (df_total["car_fuel_median"] > 0)
+].copy()
+
+suspicious_fuel["car"] = (
+    suspicious_fuel["car_brand"] + " " +
+    suspicious_fuel["car_model"]
+)
+
+suspicious_fuel[
+    [
+        "trip_id",
+        "car_brand",
+        "car_model",
+        "trip_distance",
+        "trip_fuel",
+        "fuel_per_100km",
+        "car_fuel_median",
+        "fuel_deviation_pct",
+        "employee_name",
+        "employee_surname"
+    ]
+].sort_values(
+    "fuel_deviation_pct",
+    ascending=False
+).round(2)
+
+```
+
+Two employees were identified as significantly overreporting fuel consumption. These employees traveled in a Fiat Ducato and a Ford Transit on nearly all routes. In the table, Avg_dev_% represents the average percentage deviation in fuel consumption from the median, calculated across all trips made by each employee, including those without detected irregularities.
+
+```{python}
+#| echo: false
+#| include: true
+
+# Średnie odchylenie dla wszystkich przejazdów pracowników
+avg_deviation = (
+    df_total
+    .groupby([
+        "employee_name",
+        "employee_surname",
+        "employee_department_description"
+    ], dropna=False)["fuel_deviation_pct"]
+    .mean()
+    .reset_index(name="avg_fuel_deviation")
+)
+
+# Podsumowanie pracowników z podejrzanymi przejazdami
+employee_fuel_summary = (
+    suspicious_fuel
+    .groupby([
+        "employee_name",
+        "employee_surname",
+        "employee_department_description"
+    ], dropna=False)
+    .agg(
+        suspicious_trips=("trip_id", "nunique")
+    )
+    .reset_index()
+)
+
+# Dodanie średniego odchylenia ze wszystkich przejazdów
+employee_fuel_summary = employee_fuel_summary.merge(
+    avg_deviation,
+    on=[
+        "employee_name",
+        "employee_surname",
+        "employee_department_description"
+    ],
+    how="left"
+)
+
+# Zmiana nazw kolumn
+employee_fuel_summary = (
+    employee_fuel_summary
+    .rename(columns={
+        "employee_name": "E_name",
+        "employee_surname": "E_surname",
+        "employee_department_description": "department",
+        "avg_fuel_deviation": "Avg_dev_%"
+    })
+    .sort_values("suspicious_trips", ascending=False)
+    .round(2)
+)
+
+employee_fuel_summary.style.hide(axis="index").format(precision=2).set_caption("Suspicious Employees")
+
+```
+## 5. Recomendation
+
+First, discrepancies in trip distances that deviated significantly from the median should be investigated. Most of these involved trips to offices and shops, where the destinations were not precisely defined. Therefore, these differences do not necessarily indicate irregularities.
+
+The significantly higher fuel consumption reported by employees in the Transport Department also requires further investigation. Fuel consumption levels nearly twice the expected values strongly suggest that the reported amount of fuel used may have been substantially overestimated.
