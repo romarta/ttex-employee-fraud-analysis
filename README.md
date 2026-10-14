@@ -1,6 +1,6 @@
 # TTex Employee Fraud Analysis | Python & Power BI
 
-End-to-end analysis of company vehicle usage and employee travel records to identify potential irregularities in trip distances and reported fuel consumption. The project combines Python-based data cleaning and exploratory analysis with Power BI reporting to support investigation of suspicious records and improve oversight of fleet-related expenses.
+End-to-end analysis of company vehicle usage and employee travel records to identify potential irregularities in trip distances and reported fuel consumption. The project combines Python-based data cleaning and exploratory analysis with Power BI reporting to support investigation of suspicious records and improve oversight of fleet-related expenses. **The data used is not real.**
 
 ## Project Overview
 
