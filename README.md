@@ -1,6 +1,16 @@
 # FLEETGUARD
 ## Fleet Fraud Detection & Analytics
 
+## Live Interactive Dashboard
+
+[**Open FLEETGUARD in Power BI**](https://app.powerbi.com/view?r=eyJrIjoiY2ZkMTBhMjctYWExYy00MzQ5LTljZGEtZDdjMDM4ZjI2YjdlIiwidCI6IjJmYWI1MTA4LTBiM2UtNDYwMy05Yjc3LTM2Y2QyYzk0ZmEzZSJ9&pageName=1873d2e93ba65ee9c949)
+
+Explore the interactive fleet analytics dashboard,
+including fuel anomaly detection, employee risk scoring,
+fleet utilization, and financial exposure analysis.
+
+**Dataset:** Synthetic data for demonstration purposes.
+
 ### Project Overview
 
 FLEETGUARD is an interactive Power BI solution designed to
