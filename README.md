@@ -33,6 +33,18 @@ fleet auditing and investigation prioritization.
 - Estimate potential financial exposure using fuel price scenarios.
 - Assess data quality and benchmark coverage.
 
+## Data Model
+
+FLEETGUARD uses a star-schema-based data model
+with a central trip fact table and supporting
+dimension tables.
+
+The model includes dedicated DAX measures
+for fuel benchmarking, anomaly detection,
+employee risk scoring, and financial exposure.
+
+![FLEETGUARD Semantic Model](screenshots/semantic_model.png)
+
 ### Dataset Overview
 
 | Metric | Value |
