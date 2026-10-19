@@ -1,0 +1,436 @@
+table FactTrip
+	lineageTag: 0a1a1858-ad1d-472d-b9a8-f62290f31eea
+
+	column id
+		dataType: int64
+		formatString: 0
+		lineageTag: 065aa21e-c8b8-43c9-be1f-0ccd4b207dc4
+		summarizeBy: none
+		sourceColumn: id
+
+		annotation SummarizationSetBy = User
+
+	column start
+		dataType: dateTime
+		formatString: dd.mm.yyyy
+		lineageTag: 32543b09-eb1e-48e1-a28f-4ab9207c4cdf
+		summarizeBy: none
+		sourceColumn: start
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column end
+		dataType: dateTime
+		formatString: dd.mm.yyyy
+		lineageTag: 6959c642-8861-4323-bcad-5f03376f4ec6
+		summarizeBy: none
+		sourceColumn: end
+
+		variation Odmiana
+			isDefault
+			relationship: 9e2d64b2-aceb-4dbd-aa55-aabecc136507
+			defaultHierarchy: LocalDateTable_167a7dfb-18a5-496d-9961-d5389f3bf3d2.'Hierarchia dat'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column car_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 8a36b403-47c8-4f94-a7ab-70b7a22d1494
+		summarizeBy: none
+		sourceColumn: car_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column employee_id
+		dataType: int64
+		formatString: 0
+		lineageTag: ccaee3b3-d83b-4324-b14b-690c3079ccc9
+		summarizeBy: none
+		sourceColumn: employee_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column distance
+		dataType: int64
+		formatString: 0
+		lineageTag: de83c8eb-5810-49d9-93d1-cfe0d479d3f2
+		summarizeBy: sum
+		sourceColumn: distance
+
+		annotation SummarizationSetBy = Automatic
+
+	column fuel
+		dataType: double
+		lineageTag: 918792c1-25de-4d7a-86d9-32671514a365
+		summarizeBy: sum
+		sourceColumn: fuel
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column from
+		dataType: string
+		lineageTag: e9a921be-0730-4427-acc8-1367057a9a37
+		summarizeBy: none
+		sourceColumn: from
+
+		annotation SummarizationSetBy = Automatic
+
+	column to
+		dataType: string
+		lineageTag: aeca7ede-f6bd-4d81-8561-f30eb016a3be
+		summarizeBy: none
+		sourceColumn: to
+
+		annotation SummarizationSetBy = Automatic
+
+	column RouteKey
+		dataType: string
+		lineageTag: d6976415-5d7e-487a-b83f-13c14196966a
+		summarizeBy: none
+		sourceColumn: RouteKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column FuelPer100KM
+		dataType: double
+		formatString: 0.00
+		lineageTag: 18cb7e08-50dd-4ded-b19f-2c4ab5d25aba
+		summarizeBy: none
+		sourceColumn: FuelPer100KM
+
+		annotation SummarizationSetBy = User
+
+	column FuelConsumptionBin
+		dataType: int64
+		formatString: 0
+		lineageTag: f5950811-7232-46bd-80f4-34e189c729bf
+		summarizeBy: sum
+		sourceColumn: FuelConsumptionBin
+
+		annotation SummarizationSetBy = Automatic
+
+	column PeerFuelBenchmarkTrip =
+			
+			VAR CurrentCar =
+			    FactTrip[car_id]
+			
+			VAR CurrentEmployee =
+			    FactTrip[employee_id]
+			
+			VAR CurrentRoute =
+			    RELATED(DimRoute[RoutePairKey])
+			
+			VAR PeerRows =
+			    FILTER(
+			        ALL(FactTrip),
+			        FactTrip[car_id] = CurrentCar
+			            && FactTrip[employee_id] <> CurrentEmployee
+			            && RELATED(DimRoute[RoutePairKey]) = CurrentRoute
+			            && NOT ISBLANK(FactTrip[FuelPer100KM])
+			    )
+			
+			VAR PeerTripCount =
+			    COUNTROWS(PeerRows)
+			
+			VAR PeerDriverCount =
+			    COUNTROWS(
+			        SUMMARIZE(
+			            PeerRows,
+			            FactTrip[employee_id]
+			        )
+			    )
+			
+			VAR Benchmark =
+			    MEDIANX(
+			        PeerRows,
+			        FactTrip[FuelPer100KM]
+			    )
+			
+			RETURN
+			IF(
+			    NOT ISBLANK(CurrentRoute)
+			        && PeerTripCount >= 20
+			        && PeerDriverCount >= 2,
+			    Benchmark,
+			    BLANK()
+			)
+		formatString: 0.00
+		lineageTag: fd58a332-8d43-4093-8f38-52a1887d530d
+		summarizeBy: none
+
+		annotation SummarizationSetBy = User
+
+	column FuelDeviationPct =
+			
+			VAR ActualFuel =
+			    FactTrip[FuelPer100KM]
+			
+			VAR Benchmark =
+			    FactTrip[PeerFuelBenchmarkTrip]
+			
+			RETURN
+			IF(
+			    ISBLANK(ActualFuel)
+			        || ISBLANK(Benchmark)
+			        || Benchmark <= 0,
+			    BLANK(),
+			    DIVIDE(
+			        ActualFuel - Benchmark,
+			        Benchmark
+			    )
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 7c76de44-e1ae-40ca-ac61-eb9c410d4271
+		summarizeBy: none
+
+		annotation SummarizationSetBy = User
+
+	column FuelRiskCategory =
+			
+			VAR Deviation =
+			    FactTrip[FuelDeviationPct]
+			
+			RETURN
+			SWITCH(
+			    TRUE(),
+			
+			    ISBLANK(Deviation),
+			        "Insufficient Reference Data",
+			
+			    Deviation >= 1,
+			        "Very High Anomaly",
+			
+			    Deviation >= 0.5,
+			        "High Anomaly",
+			
+			    Deviation >= 0.25,
+			        "Elevated Consumption",
+			
+			    "Within Expected Range"
+			)
+		lineageTag: a9147e2a-a632-483f-80a3-78458a21269d
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column FuelAnomalyFlag =
+			
+			VAR Deviation =
+			    FactTrip[FuelDeviationPct]
+			
+			RETURN
+			IF(
+			    ISBLANK(Deviation),
+			    BLANK(),
+			    IF(
+			        Deviation >= 0.5,
+			        1,
+			        0
+			    )
+			)
+		formatString: 0
+		lineageTag: db9a7e4e-b6a5-468b-99c2-366bd178ec16
+		summarizeBy: none
+
+		annotation SummarizationSetBy = User
+
+	column 'Trip Label' =
+			
+			"TRIP-" & FORMAT(FactTrip[id], "0000")
+		lineageTag: d3f7a4f0-d619-444a-92c2-2b07d3d686d9
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Fuel Consumption Range' =
+			
+			VAR BinStart =
+			    FactTrip[FuelConsumptionBin]
+			
+			RETURN
+			IF(
+			    ISBLANK(BinStart),
+			    BLANK(),
+			    FORMAT(BinStart, "0")
+			        & "–"
+			        & FORMAT(BinStart + 2, "0")
+			)
+		lineageTag: 6e9a16c5-655d-40ff-9432-69b6094f9514
+		summarizeBy: none
+		sortByColumn: FuelConsumptionBin
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column PeerDistanceBenchmarkTrip =
+			
+			VAR CurrentRoutePair =
+			    RELATED(DimRoute[RoutePairKey])
+			
+			VAR CurrentEmployee =
+			    FactTrip[employee_id]
+			
+			VAR IsEligibleRoute =
+			    RELATED(DimRoute[Distance Reference Status])
+			        = "City Pair"
+			
+			VAR ComparableTrips =
+			    FILTER(
+			        ALL(FactTrip),
+			        FactTrip[distance] > 0
+			            && FactTrip[employee_id] <> CurrentEmployee
+			            && RELATED(DimRoute[RoutePairKey])
+			                = CurrentRoutePair
+			    )
+			
+			VAR PeerTripCount =
+			    COUNTROWS(ComparableTrips)
+			
+			VAR PeerDriverCount =
+			    COUNTROWS(
+			        SUMMARIZE(
+			            ComparableTrips,
+			            FactTrip[employee_id]
+			        )
+			    )
+			
+			VAR BenchmarkDistance =
+			    CONVERT(
+			        MEDIANX(
+			            ComparableTrips,
+			            FactTrip[distance]
+			        ),
+			        DOUBLE
+			    )
+			
+			RETURN
+			IF(
+			    IsEligibleRoute
+			        && PeerTripCount >= 20
+			        && PeerDriverCount >= 2,
+			    BenchmarkDistance,
+			    BLANK()
+			)
+		formatString: 0.0
+		lineageTag: 560e3db9-06f0-4a59-98dd-cbe56946ebce
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column MileageDeviationPct =
+			
+			VAR ActualDistance =
+			    FactTrip[distance]
+			
+			VAR BenchmarkDistance =
+			    FactTrip[PeerDistanceBenchmarkTrip]
+			
+			RETURN
+			IF(
+			    ISBLANK(BenchmarkDistance)
+			        || BenchmarkDistance <= 0,
+			    BLANK(),
+			    DIVIDE(
+			        ActualDistance - BenchmarkDistance,
+			        BenchmarkDistance
+			    )
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: e686326d-bfb0-4e8f-a0a1-58015411563b
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactTrip = m
+		mode: import
+		source =
+				let
+				    Zrodlo = Pliki_Baza,
+				
+				    Filtrowanie = Table.SelectRows(
+				        Zrodlo,
+				        each [Nazwa_arkusza] = "Trip"
+				    ),
+				
+				    Tabele = Filtrowanie[Dane_przygotowane],
+				
+				    Polaczone = Table.Combine(Tabele),
+				    #"Usunięto duplikaty" = Table.Distinct(Polaczone),
+				    #"Zmieniono typ" = Table.TransformColumnTypes(#"Usunięto duplikaty",{{"id", Int64.Type}, {"start", type date}, {"end", type date}, {"car", Int64.Type}, {"employee", Int64.Type}, {"distance", Int64.Type}, {"fuel", type number}, {"from", type text}, {"to", type text}}),
+				    #"Zmieniono nazwy kolumn" = Table.RenameColumns(#"Zmieniono typ",{{"car", "car_id"}, {"employee", "employee_id"}}),
+				    #"Zamieniono wartość" = Table.ReplaceValue(#"Zmieniono nazwy kolumn","Mik","Mikołajki",Replacer.ReplaceValue,{"from"}),
+				    #"Zamieniono wartość1" = Table.ReplaceValue(#"Zamieniono wartość","Bartosyce","Bartoszyce",Replacer.ReplaceValue,{"from"}),
+				    #"Zamieniono wartość2" = Table.ReplaceValue(#"Zamieniono wartość1","Bar","Bartoszyce",Replacer.ReplaceValue,{"from"}),
+				    #"Zamieniono wartość3" = Table.ReplaceValue(#"Zamieniono wartość2","Bar","Bartoszyce",Replacer.ReplaceValue,{"to"}),
+				    #"Zamieniono wartość4" = Table.ReplaceValue(#"Zamieniono wartość3","Bartosyce","Bartoszyce",Replacer.ReplaceValue,{"to"}),
+				    #"Zamieniono wartość5" = Table.ReplaceValue(#"Zamieniono wartość4","Mik","Mikołajki",Replacer.ReplaceValue,{"to"}),
+				    #"Zamieniono wartość6" = Table.ReplaceValue(#"Zamieniono wartość5","Mikolajki","Mikołajki",Replacer.ReplaceValue,{"to"}),
+				    #"Zamieniono wartość7" = Table.ReplaceValue(#"Zamieniono wartość6","Mikolajki","Mikołajki",Replacer.ReplaceValue,{"from"}),
+				    #"Zamieniono wartość8" = Table.ReplaceValue(#"Zamieniono wartość7","W-wa","Warszawa",Replacer.ReplaceValue,{"from"}),
+				    #"Zamieniono wartość9" = Table.ReplaceValue(#"Zamieniono wartość8","Warsawa","Warszawa",Replacer.ReplaceValue,{"from"}),
+				    #"Zamieniono wartość10" = Table.ReplaceValue(#"Zamieniono wartość9","W-wa","Warszawa",Replacer.ReplaceValue,{"to"}),
+				    #"Zamieniono wartość11" = Table.ReplaceValue(#"Zamieniono wartość10","Warsawa","Warszawa",Replacer.ReplaceValue,{"to"}),
+				    #"Zamieniono wartość12" = Table.ReplaceValue(#"Zamieniono wartość11","Ostruda","Ostróda",Replacer.ReplaceValue,{"to"}),
+				    #"Zamieniono wartość13" = Table.ReplaceValue(#"Zamieniono wartość12","Ostroda","Ostróda",Replacer.ReplaceText,{"to"}),
+				    #"Zamieniono wartość14" = Table.ReplaceValue(#"Zamieniono wartość13","Ost","Ostróda",Replacer.ReplaceValue,{"to"}),
+				    #"Zamieniono wartość15" = Table.ReplaceValue(#"Zamieniono wartość14","Ostruda","Ostróda",Replacer.ReplaceValue,{"from"}),
+				    #"Zamieniono wartość16" = Table.ReplaceValue(#"Zamieniono wartość15","Ost","Ostróda",Replacer.ReplaceValue,{"from"}),
+				    #"Zamieniono wartość17" = Table.ReplaceValue(#"Zamieniono wartość16","Elblag","Elbląg",Replacer.ReplaceValue,{"from"}),
+				    #"Zamieniono wartość18" = Table.ReplaceValue(#"Zamieniono wartość17","Elblag","Elbląg",Replacer.ReplaceValue,{"to"}),
+				    #"Zamieniono wartość19" = Table.ReplaceValue(#"Zamieniono wartość18","Byd","Bydgoszcz",Replacer.ReplaceValue,{"to"}),
+				    #"Zamieniono wartość20" = Table.ReplaceValue(#"Zamieniono wartość19","Byd","Bydgoszcz",Replacer.ReplaceValue,{"from"}),
+				    #"Zamieniono wartość21" = Table.ReplaceValue(#"Zamieniono wartość20","Gdansk","Gdańsk",Replacer.ReplaceText,{"from"}),
+				    #"Zamieniono wartość22" = Table.ReplaceValue(#"Zamieniono wartość21","Gdansk","Gdańsk",Replacer.ReplaceValue,{"to"}),
+				    #"Zamieniono wartość23" = Table.ReplaceValue(#"Zamieniono wartość22","Ostroda","Ostróda",Replacer.ReplaceValue,{"from"}),
+				    #"Zamieniono wartość24" = Table.ReplaceValue(#"Zamieniono wartość23","Szc","Szczecin",Replacer.ReplaceValue,{"from"}),
+				    #"Zamieniono wartość25" = Table.ReplaceValue(#"Zamieniono wartość24","Malbrk","Malbork",Replacer.ReplaceValue,{"from"}),
+				    #"Zamieniono wartość26" = Table.ReplaceValue(#"Zamieniono wartość25","Gda","Gdańsk",Replacer.ReplaceValue,{"from"}),
+				    #"Zamieniono wartość27" = Table.ReplaceValue(#"Zamieniono wartość26","Szc","Szczecin",Replacer.ReplaceValue,{"to"}),
+				    #"Zamieniono wartość28" = Table.ReplaceValue(#"Zamieniono wartość27","Malbrk","Malbork",Replacer.ReplaceValue,{"to"}),
+				    #"Zamieniono wartość29" = Table.ReplaceValue(#"Zamieniono wartość28","Gda","Gdańsk",Replacer.ReplaceValue,{"to"}),
+				    #"Dodano kolumnę niestandardową" = Table.AddColumn(#"Zamieniono wartość29", "RouteKey", each if [from] = null or [to] = null then
+				    null
+				else
+				    [from] & " | " & [to]),
+				    #"Zamieniono wartość30" = Table.ReplaceValue(#"Dodano kolumnę niestandardową","Torun","Toruń",Replacer.ReplaceText,{"from"}),
+				    #"Zamieniono wartość31" = Table.ReplaceValue(#"Zamieniono wartość30","Torun","Toruń",Replacer.ReplaceText,{"to"}),
+				    #"Zmieniono typ1" = Table.TransformColumnTypes(#"Zamieniono wartość31",{{"RouteKey", type text}}),
+				    #"Usunięto kolumny" = Table.RemoveColumns(#"Zmieniono typ1",{"RouteKey"}),
+				    #"Dodano kolumnę niestandardową1" = Table.AddColumn(#"Usunięto kolumny", "RouteKey", each if [from] = null or [to] = null then
+				    null
+				else
+				    [from] & " | " & [to]),
+				    #"Zmieniono typ2" = Table.TransformColumnTypes(#"Dodano kolumnę niestandardową1",{{"RouteKey", type text}}),
+				    #"Dodano kolumnę niestandardową2" = Table.AddColumn(#"Zmieniono typ2", "FuelPer100KM", each if [distance] = null
+				    or [distance] <= 0
+				    or [fuel] = null
+				    or [fuel] < 0
+				then
+				    null
+				else
+				    ([fuel] / [distance]) * 100),
+				    #"Zmieniono typ3" = Table.TransformColumnTypes(#"Dodano kolumnę niestandardową2",{{"FuelPer100KM", type number}}),
+				    #"Dodano kolumnę niestandardową3" = Table.AddColumn(#"Zmieniono typ3", "FuelConsumptionBin", each if [FuelPer100KM] = null then
+				    null
+				else
+				    Number.RoundDown([FuelPer100KM] / 2) * 2),
+				    #"Zmieniono typ4" = Table.TransformColumnTypes(#"Dodano kolumnę niestandardową3",{{"FuelConsumptionBin", Int64.Type}})
+				in
+				    #"Zmieniono typ4"
+
+	annotation PBI_NavigationStepName = Nawigacja
+
+	annotation PBI_ResultType = Table
+

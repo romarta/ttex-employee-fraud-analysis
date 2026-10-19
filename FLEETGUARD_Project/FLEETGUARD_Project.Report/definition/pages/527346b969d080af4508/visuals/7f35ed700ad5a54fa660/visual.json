@@ -1,0 +1,149 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "7f35ed700ad5a54fa660",
+  "position": {
+    "x": 535,
+    "y": 424,
+    "z": 17000,
+    "height": 199,
+    "width": 745,
+    "tabOrder": 17000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTrip"
+                    }
+                  },
+                  "Property": "id"
+                }
+              },
+              "queryRef": "Sum(FactTrip.id)",
+              "nativeQueryRef": "id"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTrip"
+                    }
+                  },
+                  "Property": "start"
+                }
+              },
+              "queryRef": "FactTrip.start",
+              "nativeQueryRef": "start"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTrip"
+                    }
+                  },
+                  "Property": "employee_id"
+                }
+              },
+              "queryRef": "FactTrip.employee_id",
+              "nativeQueryRef": "employee_id"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTrip"
+                    }
+                  },
+                  "Property": "car_id"
+                }
+              },
+              "queryRef": "FactTrip.car_id",
+              "nativeQueryRef": "car_id"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactTrip"
+                        }
+                      },
+                      "Property": "distance"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(FactTrip.distance)",
+              "nativeQueryRef": "Suma elementów distance"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactTrip"
+                        }
+                      },
+                      "Property": "fuel"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(FactTrip.fuel)",
+              "nativeQueryRef": "Suma elementów fuel"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTrip"
+                    }
+                  },
+                  "Property": "FuelPer100KM"
+                }
+              },
+              "queryRef": "FactTrip.FuelPer100KM",
+              "nativeQueryRef": "FuelPer100KM"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactTrip"
+                  }
+                },
+                "Property": "FuelPer100KM"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,203 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "12988ca3b0d5a7b7b347",
+  "position": {
+    "x": 19.239610963748895,
+    "y": 129.0185676392573,
+    "z": 0,
+    "height": 252.37842617152964,
+    "width": 809.19540229885058,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimCar"
+                    }
+                  },
+                  "Property": "id"
+                }
+              },
+              "queryRef": "DimCar.id",
+              "nativeQueryRef": "id"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimCar"
+                    }
+                  },
+                  "Property": "brand"
+                }
+              },
+              "queryRef": "DimCar.brand",
+              "nativeQueryRef": "brand"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimCar"
+                    }
+                  },
+                  "Property": "model"
+                }
+              },
+              "queryRef": "DimCar.model",
+              "nativeQueryRef": "model"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimCar"
+                    }
+                  },
+                  "Property": "year"
+                }
+              },
+              "queryRef": "Sum(DimCar.year)",
+              "nativeQueryRef": "year"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Total Trips"
+                }
+              },
+              "queryRef": "_Measures.Total Trips",
+              "nativeQueryRef": "Total Trips"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Active Drivers"
+                }
+              },
+              "queryRef": "_Measures.Active Drivers",
+              "nativeQueryRef": "Active Drivers"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Avg Fuel Consumption (L/100KM)"
+                }
+              },
+              "queryRef": "_Measures.Avg Fuel Consumption (L/100KM)",
+              "nativeQueryRef": "Avg Fuel Consumption (L/100KM)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Median Fuel Consumption"
+                }
+              },
+              "queryRef": "_Measures.Median Fuel Consumption",
+              "nativeQueryRef": "Median Fuel Consumption"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "P95 Fuel Consumption"
+                }
+              },
+              "queryRef": "_Measures.P95 Fuel Consumption",
+              "nativeQueryRef": "P95 Fuel Consumption"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Max Fuel Consumption"
+                }
+              },
+              "queryRef": "_Measures.Max Fuel Consumption",
+              "nativeQueryRef": "Max Fuel Consumption"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "_Measures"
+                  }
+                },
+                "Property": "Median Fuel Consumption"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Vehicle Fuel Statistics'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

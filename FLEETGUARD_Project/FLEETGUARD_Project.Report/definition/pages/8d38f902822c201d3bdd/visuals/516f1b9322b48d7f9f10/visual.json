@@ -1,0 +1,53 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "516f1b9322b48d7f9f10",
+  "position": {
+    "x": 15.714285714285715,
+    "y": 50,
+    "z": 1,
+    "height": 138.57142857142858,
+    "width": 288.57142857142861,
+    "tabOrder": 1
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Financial exposure is estimated using fuel consumption above peer benchmarks and a user-selected fuel price. Results are scenario-based estimates, not confirmed financial losses.",
+                    "textStyle": {
+                      "fontSize": "12pt",
+                      "color": "#f1f5f9"
+                    }
+                  }
+                ],
+                "horizontalTextAlignment": "center"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

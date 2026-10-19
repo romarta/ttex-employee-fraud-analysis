@@ -1,0 +1,207 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "cb460bb96435aeff3485",
+  "position": {
+    "x": 41.25,
+    "y": 33.75,
+    "z": 0,
+    "height": 596.25,
+    "width": 693.75,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTrip"
+                    }
+                  },
+                  "Property": "id"
+                }
+              },
+              "queryRef": "FactTrip.id",
+              "nativeQueryRef": "id"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimEmployee"
+                    }
+                  },
+                  "Property": "Employee Label"
+                }
+              },
+              "queryRef": "DimEmployee.Employee Label",
+              "nativeQueryRef": "Employee Label"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimRoute"
+                    }
+                  },
+                  "Property": "RoutePairKey"
+                }
+              },
+              "queryRef": "DimRoute.RoutePairKey",
+              "nativeQueryRef": "RoutePairKey"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTrip"
+                    }
+                  },
+                  "Property": "distance"
+                }
+              },
+              "queryRef": "Sum(FactTrip.distance)",
+              "nativeQueryRef": "distance"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTrip"
+                    }
+                  },
+                  "Property": "PeerDistanceBenchmarkTrip"
+                }
+              },
+              "queryRef": "Sum(FactTrip.PeerDistanceBenchmarkTrip)",
+              "nativeQueryRef": "PeerDistanceBenchmarkTrip"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTrip"
+                    }
+                  },
+                  "Property": "MileageDeviationPct"
+                }
+              },
+              "queryRef": "Sum(FactTrip.MileageDeviationPct)",
+              "nativeQueryRef": "MileageDeviationPct"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactTrip"
+                  }
+                },
+                "Property": "MileageDeviationPct"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "f4a51780ed4f047dd1a8",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactTrip"
+                  }
+                },
+                "Property": "PeerDistanceBenchmarkTrip"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "f",
+              "Entity": "FactTrip",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Not": {
+                  "Expression": {
+                    "Comparison": {
+                      "ComparisonKind": 0,
+                      "Left": {
+                        "Aggregation": {
+                          "Expression": {
+                            "Column": {
+                              "Expression": {
+                                "SourceRef": {
+                                  "Source": "f"
+                                }
+                              },
+                              "Property": "PeerDistanceBenchmarkTrip"
+                            }
+                          },
+                          "Function": 0
+                        }
+                      },
+                      "Right": {
+                        "Literal": {
+                          "Value": "null"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
+      }
+    ]
+  }
+}

@@ -1,0 +1,106 @@
+table DimRoute
+	lineageTag: 81c1a3ee-8d63-4e2c-9d65-36fdec8278aa
+
+	column Origin
+		dataType: string
+		lineageTag: f2b0c890-8578-4615-a372-bc6f49e6c6ba
+		summarizeBy: none
+		sourceColumn: Origin
+
+		annotation SummarizationSetBy = Automatic
+
+	column Destination
+		dataType: string
+		lineageTag: ceb4d588-6c61-4fb3-9e00-187b8f4e7761
+		summarizeBy: none
+		sourceColumn: Destination
+
+		annotation SummarizationSetBy = Automatic
+
+	column RouteKey
+		dataType: string
+		lineageTag: 6dd01ca7-e0e5-41b6-8aae-3a77cf76de08
+		summarizeBy: none
+		sourceColumn: RouteKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column RouteName
+		dataType: string
+		lineageTag: ac918858-c54e-447a-83a5-e50652479ec0
+		summarizeBy: none
+		sourceColumn: RouteName
+
+		annotation SummarizationSetBy = Automatic
+
+	column RoutePairKey
+		dataType: string
+		lineageTag: 541a876a-dc17-4557-b867-6d26370d7cb2
+		summarizeBy: none
+		sourceColumn: RoutePairKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Distance Reference Status' =
+			
+			VAR OriginLocation =
+			    LOWER(
+			        TRIM(DimRoute[Origin])
+			    )
+			
+			VAR DestinationLocation =
+			    LOWER(
+			        TRIM(DimRoute[Destination])
+			    )
+			
+			VAR IsGenericLocation =
+			    OriginLocation IN {"sklep", "urząd"}
+			        || DestinationLocation IN {"sklep", "urząd"}
+			
+			RETURN
+			IF(
+			    IsGenericLocation,
+			    "Generic Location",
+			    "City Pair"
+			)
+		lineageTag: 057d6688-899c-43e9-bdd0-5cac5de5a7f1
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimRoute = m
+		mode: import
+		source =
+				let
+				    Źródło = FactTrip,
+				    #"Usunięto inne kolumny" = Table.SelectColumns(Źródło,{"from", "to", "RouteKey"}),
+				    #"Zmieniono typ" = Table.TransformColumnTypes(#"Usunięto inne kolumny",{{"RouteKey", type text}}),
+				    #"Usunięto duplikaty" = Table.Distinct(#"Zmieniono typ", {"RouteKey"}),
+				    #"Dodano kolumnę niestandardową" = Table.AddColumn(#"Usunięto duplikaty", "RouteName", each if [Origin] = null or [Destination] = null then
+				    null
+				else
+				    [Origin] & " → " & [Destination]),
+				    #"Zmieniono nazwy kolumn" = Table.RenameColumns(#"Dodano kolumnę niestandardową",{{"from", "Origin"}, {"to", "Destination"}}),
+				    #"Usunięto kolumny" = Table.RemoveColumns(#"Zmieniono nazwy kolumn",{"RouteName"}),
+				    #"Dodano kolumnę niestandardową1" = Table.AddColumn(#"Usunięto kolumny", "RouteName", each if [Origin] = null or [Destination] = null then
+				    null
+				else
+				    [Origin] & " → " & [Destination]),
+				    #"Dodano kolumnę niestandardową2" = Table.AddColumn(#"Dodano kolumnę niestandardową1", "RoutePairKey", each if [Origin] = null or [Destination] = null then
+				    null
+				else
+				    Text.Combine(
+				        List.Sort(
+				            {[Origin], [Destination]},
+				            Comparer.OrdinalIgnoreCase
+				        ),
+				        " | "
+				    )),
+				    #"Zmieniono typ1" = Table.TransformColumnTypes(#"Dodano kolumnę niestandardową2",{{"RoutePairKey", type text}, {"RouteName", type text}})
+				in
+				    #"Zmieniono typ1"
+
+	annotation PBI_NavigationStepName = Nawigacja
+
+	annotation PBI_ResultType = Table
+

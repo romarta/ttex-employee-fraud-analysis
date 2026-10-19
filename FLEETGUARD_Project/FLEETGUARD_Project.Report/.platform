@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "FLEETGUARD_Project"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "a77af0b0-c151-4132-b2d4-947beebf18c4"
+  }
+}

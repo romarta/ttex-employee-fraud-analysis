@@ -1,0 +1,190 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "d9c6f1d44f670a4d6f3f",
+  "displayName": "DRILL | Employee Investigation",
+  "displayOption": "ActualSize",
+  "height": 900,
+  "width": 1600,
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "b86e6bd420adaca3b572",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimEmployee"
+              }
+            },
+            "Property": "Employee Label"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "DimEmployee",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "Employee Label"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'EMP-035'"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "Drillthrough"
+      }
+    ]
+  },
+  "pageBinding": {
+    "name": "f962fb00fa3f35281d8e",
+    "type": "Drillthrough",
+    "parameters": [
+      {
+        "name": "097f003654f05a55f1a4",
+        "boundFilter": "b86e6bd420adaca3b572",
+        "fieldExpr": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimEmployee"
+              }
+            },
+            "Property": "Employee Label"
+          }
+        }
+      }
+    ]
+  },
+  "objects": {
+    "background": [
+      {
+        "properties": {
+          "color": {
+            "solid": {
+              "color": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'#0B1220'"
+                  }
+                }
+              }
+            }
+          },
+          "transparency": {
+            "expr": {
+              "Literal": {
+                "Value": "0D"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "type": "Drillthrough",
+  "visualInteractions": [
+    {
+      "source": "ac2016e6848fb1b2f5fe",
+      "target": "8e1ae2297262f36620a7",
+      "type": "DataFilter"
+    },
+    {
+      "source": "ac2016e6848fb1b2f5fe",
+      "target": "7a3a2b80403aaec8d8e2",
+      "type": "NoFilter"
+    },
+    {
+      "source": "ac2016e6848fb1b2f5fe",
+      "target": "1a8bb37b401d3ca29a17",
+      "type": "NoFilter"
+    },
+    {
+      "source": "ac2016e6848fb1b2f5fe",
+      "target": "7146ae99f484b56745e4",
+      "type": "NoFilter"
+    },
+    {
+      "source": "ac2016e6848fb1b2f5fe",
+      "target": "a45b41fbadb4e280243e",
+      "type": "NoFilter"
+    },
+    {
+      "source": "ac2016e6848fb1b2f5fe",
+      "target": "b83efb8152a632dfd96b",
+      "type": "NoFilter"
+    },
+    {
+      "source": "ac2016e6848fb1b2f5fe",
+      "target": "dc1285aaee99e025bec7",
+      "type": "NoFilter"
+    },
+    {
+      "source": "ac2016e6848fb1b2f5fe",
+      "target": "dd6fdab241e8822b4849",
+      "type": "NoFilter"
+    },
+    {
+      "source": "314914a643dfab1574e3",
+      "target": "7a3a2b80403aaec8d8e2",
+      "type": "NoFilter"
+    },
+    {
+      "source": "314914a643dfab1574e3",
+      "target": "1a8bb37b401d3ca29a17",
+      "type": "NoFilter"
+    },
+    {
+      "source": "314914a643dfab1574e3",
+      "target": "7146ae99f484b56745e4",
+      "type": "NoFilter"
+    },
+    {
+      "source": "314914a643dfab1574e3",
+      "target": "a45b41fbadb4e280243e",
+      "type": "NoFilter"
+    },
+    {
+      "source": "314914a643dfab1574e3",
+      "target": "b83efb8152a632dfd96b",
+      "type": "NoFilter"
+    },
+    {
+      "source": "314914a643dfab1574e3",
+      "target": "dc1285aaee99e025bec7",
+      "type": "NoFilter"
+    },
+    {
+      "source": "314914a643dfab1574e3",
+      "target": "dd6fdab241e8822b4849",
+      "type": "NoFilter"
+    }
+  ]
+}

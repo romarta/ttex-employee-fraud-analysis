@@ -1,0 +1,129 @@
+table DimCar
+	lineageTag: 0810a113-5cb6-45fe-b3f1-e60837e021c5
+
+	column id
+		dataType: int64
+		formatString: 0
+		lineageTag: 70c160a7-ea08-4bd6-bcc9-9a2afd91a3d9
+		summarizeBy: none
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column brand
+		dataType: string
+		lineageTag: 69becec1-4caf-4cac-8477-c852ce38eaa9
+		summarizeBy: none
+		sourceColumn: brand
+
+		annotation SummarizationSetBy = Automatic
+
+	column model
+		dataType: string
+		lineageTag: 8e56f05d-5b0f-4c59-8b51-9dba22efedde
+		summarizeBy: none
+		sourceColumn: model
+
+		annotation SummarizationSetBy = Automatic
+
+	column year
+		dataType: int64
+		formatString: 0
+		lineageTag: bde42853-afa1-4132-817f-c499ac5fa87d
+		summarizeBy: sum
+		sourceColumn: year
+
+		annotation SummarizationSetBy = Automatic
+
+	column fuel_type
+		dataType: string
+		lineageTag: f54c9436-71b2-44e1-b774-38ef120867f6
+		summarizeBy: none
+		sourceColumn: fuel_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column transport
+		dataType: string
+		lineageTag: 849f81dc-5f67-4226-972c-633b7ffc2bb0
+		summarizeBy: none
+		sourceColumn: transport
+
+		annotation SummarizationSetBy = Automatic
+
+	column active
+		dataType: string
+		lineageTag: ae91bb61-1633-4bf7-8c81-06b73aecf386
+		summarizeBy: none
+		sourceColumn: active
+
+		annotation SummarizationSetBy = Automatic
+
+	column active_from
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 67821efd-a402-4c68-a373-82d2e1db924a
+		summarizeBy: none
+		sourceColumn: active_from
+
+		variation Odmiana
+			isDefault
+			relationship: aa2a18c2-959e-411e-bcf1-9074e725e937
+			defaultHierarchy: LocalDateTable_a652d1d1-01a8-4d86-84d5-8c1e6ef4f8c2.'Hierarchia dat'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column active_to
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: a490ba1f-a7b1-4007-8e35-312938f4fdec
+		summarizeBy: none
+		sourceColumn: active_to
+
+		variation Odmiana
+			isDefault
+			relationship: 091654c9-2156-46a5-a67d-0767419e85ae
+			defaultHierarchy: LocalDateTable_b99804fc-3fa1-43ca-a02f-c94d9eb0bda9.'Hierarchia dat'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Vehicle Label' =
+			
+			DimCar[brand] & " " &
+			DimCar[model] & " (" &
+			FORMAT(DimCar[year], "0") & ")" &
+			" | ID " & FORMAT(DimCar[id], "0")
+		lineageTag: 732854ba-8091-4c64-b3c5-8c45e0e06662
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimCar = m
+		mode: import
+		source =
+				let
+				    Zrodlo = Pliki_Baza,
+				
+				    Filtrowanie = Table.SelectRows(
+				        Zrodlo,
+				        each [Nazwa_arkusza] = "Car"
+				    ),
+				
+				    Tabele = Filtrowanie[Dane_przygotowane],
+				
+				    Polaczone = Table.Combine(Tabele),
+				    #"Usunięto duplikaty" = Table.Distinct(Polaczone),
+				    #"Zmieniono typ" = Table.TransformColumnTypes(#"Usunięto duplikaty",{{"id", Int64.Type}, {"brand", type text}, {"model", type text}, {"year", Int64.Type}, {"fuel_type", type text}, {"transport", type text}, {"active", type text}, {"active_from", type date}, {"active_to", type date}}),
+				    #"Zamieniono wartość" = Table.ReplaceValue(#"Zmieniono typ",null,"Yes",Replacer.ReplaceValue,{"active"})
+				
+				in
+				    #"Zamieniono wartość"
+
+	annotation PBI_NavigationStepName = Nawigacja
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "b7107b82e97a43ddd5d7",
+  "position": {
+    "x": 15.714285714285715,
+    "y": 42.857142857142861,
+    "z": 1,
+    "height": 152.85714285714286,
+    "width": 288.57142857142861,
+    "tabOrder": 1
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Fuel consumption is compared with peer medians for the same vehicle and route pair. At least 20 peer trips from two other drivers are required. Trips exceeding the benchmark by 50% or more are flagged for review.",
+                    "textStyle": {
+                      "fontSize": "12pt",
+                      "color": "#f1f5f9"
+                    }
+                  }
+                ],
+                "horizontalTextAlignment": "center"
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": ""
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

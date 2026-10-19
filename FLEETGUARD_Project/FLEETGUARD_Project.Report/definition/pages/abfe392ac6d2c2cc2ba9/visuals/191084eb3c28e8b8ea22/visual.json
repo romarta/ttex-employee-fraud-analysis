@@ -1,0 +1,153 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "191084eb3c28e8b8ea22",
+  "position": {
+    "x": 265,
+    "y": 407,
+    "z": 2000,
+    "height": 279,
+    "width": 1015,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimEmployee"
+                    }
+                  },
+                  "Property": "id"
+                }
+              },
+              "queryRef": "DimEmployee.id",
+              "nativeQueryRef": "id"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimEmployee"
+                    }
+                  },
+                  "Property": "name"
+                }
+              },
+              "queryRef": "DimEmployee.name",
+              "nativeQueryRef": "name"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimEmployee"
+                    }
+                  },
+                  "Property": "surname"
+                }
+              },
+              "queryRef": "DimEmployee.surname",
+              "nativeQueryRef": "surname"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Frequency Risk Points"
+                }
+              },
+              "queryRef": "_Measures.Frequency Risk Points",
+              "nativeQueryRef": "Frequency Risk Points"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Severity Risk Points"
+                }
+              },
+              "queryRef": "_Measures.Severity Risk Points",
+              "nativeQueryRef": "Severity Risk Points"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Persistence Risk Points"
+                }
+              },
+              "queryRef": "_Measures.Persistence Risk Points",
+              "nativeQueryRef": "Persistence Risk Points"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Employee Fuel Risk Score"
+                }
+              },
+              "queryRef": "_Measures.Employee Fuel Risk Score",
+              "nativeQueryRef": "Employee Fuel Risk Score"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Employee Fuel Risk Level"
+                }
+              },
+              "queryRef": "_Measures.Employee Fuel Risk Level",
+              "nativeQueryRef": "Employee Fuel Risk Level"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "_Measures"
+                  }
+                },
+                "Property": "Employee Fuel Risk Score"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

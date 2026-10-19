@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "FLEETGUARD_Project"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "dffe3f5e-f0ce-41e5-b888-edf1ae155c79"
+  }
+}

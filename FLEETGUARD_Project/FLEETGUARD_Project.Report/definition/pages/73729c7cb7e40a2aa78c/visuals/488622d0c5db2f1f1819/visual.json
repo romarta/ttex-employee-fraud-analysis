@@ -1,0 +1,198 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "488622d0c5db2f1f1819",
+  "position": {
+    "x": 16.976127320954909,
+    "y": 153.91688770999116,
+    "z": 0,
+    "height": 272.74977895667553,
+    "width": 1247.1794871794873,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimRoute"
+                    }
+                  },
+                  "Property": "RoutePairKey"
+                }
+              },
+              "queryRef": "DimRoute.RoutePairKey",
+              "nativeQueryRef": "RoutePairKey"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimCar"
+                    }
+                  },
+                  "Property": "id"
+                }
+              },
+              "queryRef": "DimCar.id",
+              "nativeQueryRef": "Vehicle ID",
+              "displayName": "Vehicle ID"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimEmployee"
+                    }
+                  },
+                  "Property": "id"
+                }
+              },
+              "queryRef": "DimEmployee.id",
+              "nativeQueryRef": "Employee ID",
+              "displayName": "Employee ID"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Total Trips"
+                }
+              },
+              "queryRef": "_Measures.Total Trips",
+              "nativeQueryRef": "Total Trips"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Peer Trips"
+                }
+              },
+              "queryRef": "_Measures.Peer Trips",
+              "nativeQueryRef": "Peer Trips"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Peer Drivers"
+                }
+              },
+              "queryRef": "_Measures.Peer Drivers",
+              "nativeQueryRef": "Peer Drivers"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Employee Fuel Median (Min 10 Trips)"
+                }
+              },
+              "queryRef": "_Measures.Employee Fuel Median (Min 10 Trips)",
+              "nativeQueryRef": "Employee Fuel Median (Min 10 Trips)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Vehicle-Route Peer Benchmark (L/100KM)"
+                }
+              },
+              "queryRef": "_Measures.Vehicle-Route Peer Benchmark (L/100KM)",
+              "nativeQueryRef": "Vehicle-Route Peer Benchmark (L/100KM)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Vehicle-Route Fuel Deviation (%)"
+                }
+              },
+              "queryRef": "_Measures.Vehicle-Route Fuel Deviation (%)",
+              "nativeQueryRef": "Vehicle-Route Fuel Deviation (%)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Vehicle-Route Benchmark Status"
+                }
+              },
+              "queryRef": "_Measures.Vehicle-Route Benchmark Status",
+              "nativeQueryRef": "Vehicle-Route Benchmark Status"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "DimRoute"
+                  }
+                },
+                "Property": "RoutePairKey"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "wordWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

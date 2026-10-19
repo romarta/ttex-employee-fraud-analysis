@@ -1,0 +1,53 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "f02fd29cc06756d5338b",
+  "position": {
+    "x": 15.714285714285715,
+    "y": 48.571428571428577,
+    "z": 1,
+    "height": 142.85714285714286,
+    "width": 288.57142857142861,
+    "tabOrder": 1
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Trip distances are compared with peer medians for the same route pair. Generic destinations are excluded. Observed deviations range from -4.8% to +4.9%; no mileage anomaly threshold was introduced.",
+                    "textStyle": {
+                      "fontSize": "12pt",
+                      "color": "#f1f5f9"
+                    }
+                  }
+                ],
+                "horizontalTextAlignment": "center"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

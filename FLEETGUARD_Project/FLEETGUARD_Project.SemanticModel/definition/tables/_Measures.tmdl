@@ -1,0 +1,1325 @@
+table _Measures
+	lineageTag: 27e6f3e8-2ae9-430d-9633-3860f6ca9209
+
+	measure 'Total Trips' =
+			
+			COUNTROWS(FactTrip)
+		formatString: 0
+		displayFolder: 01 | Trip Metrics
+		lineageTag: 04f9bf3b-2b98-45b8-9ac4-d4e4fd0f1042
+
+	measure 'Total Distance (KM)' =
+			
+			SUM(FactTrip[distance])
+		formatString: #,0
+		displayFolder: 01 | Trip Metrics
+		lineageTag: 9173b5d3-ad5d-4836-923e-e08516dde63a
+
+	measure 'Total Fuel (L)' =
+			
+			SUM(FactTrip[fuel])
+		formatString: 0.00
+		displayFolder: 02 | Fuel Metrics
+		lineageTag: 9e12b6dc-1212-470e-9174-069169d22c1f
+
+	measure 'Avg Fuel Consumption (L/100KM)' =
+			
+			DIVIDE(
+			    [Total Fuel (L)] * 100,
+			    [Total Distance (KM)]
+			)
+		formatString: 0.00
+		displayFolder: 02 | Fuel Metrics
+		lineageTag: 159c4527-9349-447d-b4ec-37fb18513f73
+
+	measure 'Active Drivers' =
+			
+			DISTINCTCOUNT(FactTrip[employee_id])
+		formatString: 0
+		displayFolder: 03 | Fleet Metrics
+		lineageTag: cdce8a2b-5fb4-4994-9d6f-41972e9a5cc7
+
+	measure 'Vehicles Used' =
+			
+			DISTINCTCOUNT(FactTrip[car_id])
+		formatString: 0
+		displayFolder: 03 | Fleet Metrics
+		lineageTag: b5d7e708-b2df-4dd4-b7a7-25cc2efd4423
+
+	measure 'Avg Trip Distance (KM)' =
+			
+			DIVIDE(
+			    [Total Distance (KM)],
+			    [Total Trips]
+			)
+		formatString: 0.00
+		displayFolder: 01 | Trip Metrics
+		lineageTag: a38377e2-499d-46ec-84c2-85ec486b1b80
+
+	measure 'Weekend Trips' =
+			
+			CALCULATE(
+			    [Total Trips],
+			    KEEPFILTERS(
+			        DimDate[Day Type] = "Weekend"
+			    )
+			)
+		formatString: 0
+		displayFolder: 04 | Behavior Metrics
+		lineageTag: e1ee70e5-1748-40d3-88de-eca10b8996d5
+
+	measure 'Weekend Trip Rate' =
+			
+			DIVIDE(
+			    [Weekend Trips],
+			    [Total Trips]
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 04 | Behavior Metrics
+		lineageTag: 046c64ca-5d36-40f0-b003-889ce24e8f45
+
+	measure 'Unique Trip IDs' =
+			
+			DISTINCTCOUNT(FactTrip[id])
+		formatString: 0
+		displayFolder: 08 | Data Quality
+		lineageTag: 93b6f9bc-5cf9-4fbd-bfd8-05d4d3ec5b61
+
+	measure 'Duplicate Trip ID Rows' =
+			
+			[Total Trips] - [Unique Trip IDs]
+		formatString: 0
+		displayFolder: 08 | Data Quality
+		lineageTag: 91f4d363-68e8-4d8e-a4a7-16e323d7022a
+
+	measure 'Invalid Distance Trips' =
+			
+			COALESCE(
+			    COUNTROWS(
+			        FILTER(
+			            FactTrip,
+			            ISBLANK(FactTrip[distance])
+			                || FactTrip[distance] <= 0
+			        )
+			    ),
+			    0
+			)
+		formatString: 0
+		displayFolder: 08 | Data Quality
+		lineageTag: cee70bb2-e495-464a-9b80-7ac81e70833b
+
+	measure 'Invalid Fuel Trips' =
+			
+			COALESCE(
+			    COUNTROWS(
+			        FILTER(
+			            FactTrip,
+			            ISBLANK(FactTrip[fuel])
+			                || FactTrip[fuel] < 0
+			        )
+			    ),
+			    0
+			)
+		formatString: 0
+		displayFolder: 08 | Data Quality
+		lineageTag: 7affc56d-a96e-4046-af8b-159763b4b181
+
+	measure 'Min Fuel Consumption' =
+			
+			MIN(FactTrip[FuelPer100KM])
+		formatString: 0.00
+		displayFolder: 05 | Statistical Analysis
+		lineageTag: 31250bbd-e734-41ac-ab2b-934e13906349
+
+	measure 'Max Fuel Consumption' =
+			
+			MAX(FactTrip[FuelPer100KM])
+		formatString: 0.00
+		displayFolder: 05 | Statistical Analysis
+		lineageTag: 8c20ef75-75b7-4368-9efd-bc2a04e0cd26
+
+	measure 'Median Fuel Consumption' =
+			
+			MEDIAN(FactTrip[FuelPer100KM])
+		formatString: 0.00
+		displayFolder: 05 | Statistical Analysis
+		lineageTag: c1f4c3b7-0dd7-4195-94e4-01ec78ba5b81
+
+	measure 'P95 Fuel Consumption' =
+			
+			PERCENTILEX.INC(
+			    FactTrip,
+			    FactTrip[FuelPer100KM],
+			    0.95
+			)
+		formatString: 0.00
+		displayFolder: 05 | Statistical Analysis
+		lineageTag: 5c5266d6-c68e-4362-b165-83a4443d2f61
+
+	measure 'Avg Fuel Consumption (Min 10 Trips)' =
+			
+			IF(
+			    [Total Trips] >= 10,
+			    [Avg Fuel Consumption (L/100KM)],
+			    BLANK()
+			)
+		displayFolder: 05 | Statistical Analysis
+		lineageTag: 67693d73-6ca6-4bb9-ab30-4a89107760f5
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Peer Trips' =
+			
+			VAR CurrentEmployee =
+			    SELECTEDVALUE(DimEmployee[id])
+			
+			RETURN
+			IF(
+			    NOT ISBLANK(CurrentEmployee),
+			    COALESCE(
+			        CALCULATE(
+			            [Total Trips],
+			            REMOVEFILTERS(DimEmployee),
+			            REMOVEFILTERS(DimDepartment),
+			            REMOVEFILTERS(DimPostion),
+			            DimEmployee[id] <> CurrentEmployee
+			        ),
+			        0
+			    )
+			)
+		formatString: 0
+		displayFolder: 05 | Statistical Analysis
+		lineageTag: edd31f8b-391f-47df-bc1e-c67518169984
+
+	measure 'Peer Drivers' =
+			
+			VAR CurrentEmployee =
+			    SELECTEDVALUE(DimEmployee[id])
+			
+			RETURN
+			IF(
+			    NOT ISBLANK(CurrentEmployee),
+			    COALESCE(
+			        CALCULATE(
+			            DISTINCTCOUNT(FactTrip[employee_id]),
+			            REMOVEFILTERS(DimEmployee),
+			            REMOVEFILTERS(DimDepartment),
+			            REMOVEFILTERS(DimPostion),
+			            DimEmployee[id] <> CurrentEmployee
+			        ),
+			        0
+			    )
+			)
+		formatString: 0
+		displayFolder: 05 | Statistical Analysis
+		lineageTag: 706bab65-d746-4cb0-81b0-9074f224deb7
+
+	measure 'Peer Fuel Benchmark (L/100KM)' =
+			
+			VAR CurrentEmployee =
+			    SELECTEDVALUE(DimEmployee[id])
+			
+			VAR PeerTripCount =
+			    [Peer Trips]
+			
+			VAR PeerDriverCount =
+			    [Peer Drivers]
+			
+			VAR Benchmark =
+			    CALCULATE(
+			        [Median Fuel Consumption],
+			        REMOVEFILTERS(DimEmployee),
+			        REMOVEFILTERS(DimDepartment),
+			        REMOVEFILTERS(DimPostion),
+			        DimEmployee[id] <> CurrentEmployee
+			    )
+			
+			RETURN
+			IF(
+			    NOT ISBLANK(CurrentEmployee)
+			        && PeerTripCount >= 20
+			        && PeerDriverCount >= 2,
+			    Benchmark,
+			    BLANK()
+			)
+		displayFolder: 05 | Statistical Analysis
+		lineageTag: aadb9cfe-9dd4-4bd5-af0d-c6e067c40e3a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Employee Fuel Median (Min 10 Trips)' =
+			
+			IF(
+			    [Total Trips] >= 10,
+			    [Median Fuel Consumption],
+			    BLANK()
+			)
+		displayFolder: 05 | Statistical Analysis
+		lineageTag: d92b2fc8-cebd-4cad-9dd0-0da3ee5458c8
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Fuel Deviation vs Peers (%)' =
+			
+			VAR EmployeeMedian =
+			    [Employee Fuel Median (Min 10 Trips)]
+			
+			VAR PeerMedian =
+			    [Peer Fuel Benchmark (L/100KM)]
+			
+			RETURN
+			IF(
+			    NOT ISBLANK(EmployeeMedian)
+			        && NOT ISBLANK(PeerMedian),
+			    DIVIDE(
+			        EmployeeMedian - PeerMedian,
+			        PeerMedian
+			    ),
+			    BLANK()
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: 05 | Statistical Analysis
+		lineageTag: ba648886-8d10-46a5-a37a-83fb6254a055
+
+	measure 'Vehicle-Route Peer Benchmark (L/100KM)' =
+			
+			VAR CurrentEmployee =
+			    SELECTEDVALUE(DimEmployee[id])
+			
+			VAR ValidContext =
+			    HASONEVALUE(DimCar[id])
+			        && HASONEVALUE(DimRoute[RoutePairKey])
+			        && NOT ISBLANK(CurrentEmployee)
+			
+			VAR PeerTripCount =
+			    [Peer Trips]
+			
+			VAR PeerDriverCount =
+			    [Peer Drivers]
+			
+			VAR Benchmark =
+			    CALCULATE(
+			        MEDIAN(FactTrip[FuelPer100KM]),
+			        REMOVEFILTERS(DimEmployee),
+			        REMOVEFILTERS(DimDepartment),
+			        REMOVEFILTERS(DimPostion),
+			        DimEmployee[id] <> CurrentEmployee
+			    )
+			
+			RETURN
+			IF(
+			    ValidContext
+			        && PeerTripCount >= 20
+			        && PeerDriverCount >= 2,
+			    Benchmark,
+			    BLANK()
+			)
+		displayFolder: 05 | Statistical Analysis
+		lineageTag: beb78586-8e23-4447-8036-10d628b806da
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Vehicle-Route Fuel Deviation (%)' =
+			
+			VAR EmployeeMedian =
+			    [Employee Fuel Median (Min 10 Trips)]
+			
+			VAR PeerBenchmark =
+			    [Vehicle-Route Peer Benchmark (L/100KM)]
+			
+			RETURN
+			IF(
+			    NOT ISBLANK(EmployeeMedian)
+			        && NOT ISBLANK(PeerBenchmark),
+			    DIVIDE(
+			        EmployeeMedian - PeerBenchmark,
+			        PeerBenchmark
+			    ),
+			    BLANK()
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 05 | Statistical Analysis
+		lineageTag: 99ffcdce-7c27-4321-b446-25861acc37c9
+
+	measure 'Vehicle-Route Benchmark Status' =
+			
+			VAR ValidContext =
+			    HASONEVALUE(DimCar[id])
+			        && HASONEVALUE(DimEmployee[id])
+			        && HASONEVALUE(DimRoute[RoutePairKey])
+			
+			RETURN
+			SWITCH(
+			    TRUE(),
+			
+			    NOT ValidContext,
+			        "Select vehicle, employee and route",
+			
+			    [Total Trips] < 10,
+			        "Insufficient Employee Trips",
+			
+			    [Peer Trips] < 20,
+			        "Insufficient Peer Trips",
+			
+			    [Peer Drivers] < 2,
+			        "Insufficient Peer Drivers",
+			
+			    "Comparable"
+			)
+		displayFolder: 05 | Statistical Analysis
+		lineageTag: 5341ce6c-18a6-452c-9b74-7f181764a576
+
+	measure 'Fuel Anomaly Trips' =
+			
+			COALESCE(
+			    CALCULATE(
+			        [Total Trips],
+			        KEEPFILTERS(
+			            FactTrip[FuelAnomalyFlag] = 1
+			        )
+			    ),
+			    0
+			)
+		formatString: 0
+		displayFolder: 06 | Anomaly Detection
+		lineageTag: a6d7b217-ebdd-4887-8da3-472ece71b61a
+
+	measure 'Assessed Trips' =
+			
+			COALESCE(
+			    COUNTROWS(
+			        FILTER(
+			            FactTrip,
+			            NOT ISBLANK(FactTrip[FuelAnomalyFlag])
+			        )
+			    ),
+			    0
+			)
+		formatString: 0
+		displayFolder: 06 | Anomaly Detection
+		lineageTag: 2b01218b-64de-4ec4-81b7-59ea9b4c27be
+
+	measure 'Unassessed Trips' =
+			
+			[Total Trips] - [Assessed Trips]
+		formatString: 0
+		displayFolder: 06 | Anomaly Detection
+		lineageTag: 93a06068-bf77-4fd7-a087-c931ff9891eb
+
+	measure 'Assessment Coverage (%)' =
+			
+			DIVIDE(
+			    [Assessed Trips],
+			    [Total Trips]
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 06 | Anomaly Detection
+		lineageTag: 3ed1e9e6-c5e3-4337-bafa-0121a4ff06b9
+
+	measure 'Fuel Anomaly Rate (%)' =
+			
+			DIVIDE(
+			    [Fuel Anomaly Trips],
+			    [Assessed Trips]
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 06 | Anomaly Detection
+		lineageTag: 223428b8-d9a6-4d86-b0aa-9d34cb4cf4ef
+
+	measure 'Fuel Anomaly Days' =
+			
+			COALESCE(
+			    CALCULATE(
+			        DISTINCTCOUNT(FactTrip[start]),
+			        KEEPFILTERS(
+			            FactTrip[FuelAnomalyFlag] = 1
+			        )
+			    ),
+			    0
+			)
+		formatString: 0
+		displayFolder: 06 | Anomaly Detection
+		lineageTag: 2772f6d7-deea-405a-ba10-bef3dfd1c5f6
+
+	measure 'Vehicles with Fuel Anomalies' =
+			
+			COALESCE(
+			    CALCULATE(
+			        DISTINCTCOUNT(FactTrip[car_id]),
+			        KEEPFILTERS(
+			            FactTrip[FuelAnomalyFlag] = 1
+			        )
+			    ),
+			    0
+			)
+		formatString: 0
+		displayFolder: 06 | Anomaly Detection
+		lineageTag: 280b1470-8673-4605-a535-e6ac8d561c10
+
+	measure 'Travel Days' =
+			
+			COALESCE(
+			    DISTINCTCOUNT(FactTrip[start]),
+			    0
+			)
+		formatString: 0
+		displayFolder: 04 | Behavior Metrics
+		lineageTag: 1b035420-920d-41ac-a213-8eb3c97c9c84
+
+	measure 'Anomaly Day Rate (%)' =
+			
+			DIVIDE(
+			    [Fuel Anomaly Days],
+			    [Travel Days],
+			    0
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: 06 | Anomaly Detection
+		lineageTag: 8b447178-e7a1-4357-ad03-2ef9113450eb
+
+	measure 'Avg Flagged Fuel Deviation (%)' =
+			
+			VAR FlaggedTrips =
+			    FILTER(
+			        FactTrip,
+			        FactTrip[FuelAnomalyFlag] = 1
+			    )
+			
+			RETURN
+			IF(
+			    [Fuel Anomaly Trips] = 0,
+			    BLANK(),
+			    AVERAGEX(
+			        FlaggedTrips,
+			        FactTrip[FuelDeviationPct]
+			    )
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 05 | Statistical Analysis
+		lineageTag: 34d1ea33-d31e-4b13-8591-26a82ec68bb9
+
+	measure 'Employee Fuel Risk Score' =
+			
+			VAR ValidEmployee =
+			    HASONEVALUE(DimEmployee[id])
+			
+			VAR EnoughData =
+			    [Assessed Trips] >= 20
+			        && COALESCE(
+			            [Assessment Coverage (%)],
+			            0
+			        ) >= 0.7
+			
+			VAR FrequencyScore =
+			    MIN(
+			        1,
+			        COALESCE(
+			            [Fuel Anomaly Rate (%)],
+			            0
+			        )
+			    )
+			
+			VAR SeverityScore =
+			    MIN(
+			        1,
+			        DIVIDE(
+			            COALESCE(
+			                [Avg Flagged Fuel Deviation (%)],
+			                0
+			            ),
+			            1.5,
+			            0
+			        )
+			    )
+			
+			VAR PersistenceScore =
+			    MIN(
+			        1,
+			        COALESCE(
+			            [Anomaly Day Rate (%)],
+			            0
+			        )
+			    )
+			
+			VAR FinalScore =
+			    100 *
+			    (
+			        0.5 * FrequencyScore
+			        + 0.3 * SeverityScore
+			        + 0.2 * PersistenceScore
+			    )
+			
+			RETURN
+			IF(
+			    ValidEmployee
+			        && EnoughData,
+			    ROUND(FinalScore, 0),
+			    BLANK()
+			)
+		formatString: 0
+		displayFolder: 09 | Risk Scoring
+		lineageTag: beaeebaa-9d45-4632-a5ef-8ab7fa7804be
+
+	measure 'Employee Fuel Risk Level' =
+			
+			VAR RiskScore =
+			    [Employee Fuel Risk Score]
+			
+			RETURN
+			IF(
+			    NOT HASONEVALUE(DimEmployee[id]),
+			    BLANK(),
+			    SWITCH(
+			        TRUE(),
+			
+			        [Total Trips] = 0,
+			            "No Trips",
+			
+			        ISBLANK(RiskScore),
+			            "Insufficient Data",
+			
+			        RiskScore >= 75,
+			            "High",
+			
+			        RiskScore >= 40,
+			            "Medium",
+			
+			        "Low"
+			    )
+			)
+		displayFolder: 09 | Risk Scoring
+		lineageTag: 049bfb42-ff25-4cd7-8466-14f377c9f248
+
+	measure 'Frequency Risk Points' =
+			
+			IF(
+			    ISBLANK([Employee Fuel Risk Score]),
+			    BLANK(),
+			    ROUND(
+			        50 *
+			        MIN(
+			            1,
+			            MAX(
+			                0,
+			                COALESCE([Fuel Anomaly Rate (%)], 0)
+			            )
+			        ),
+			        1
+			    )
+			)
+		displayFolder: 09 | Risk Scoring
+		lineageTag: 04227b0c-22f4-493e-bffc-40c04cbfc7bb
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Severity Risk Points' =
+			
+			IF(
+			    ISBLANK([Employee Fuel Risk Score]),
+			    BLANK(),
+			    ROUND(
+			        30 *
+			        MIN(
+			            1,
+			            MAX(
+			                0,
+			                DIVIDE(
+			                    COALESCE(
+			                        [Avg Flagged Fuel Deviation (%)],
+			                        0
+			                    ),
+			                    1.5,
+			                    0
+			                )
+			            )
+			        ),
+			        1
+			    )
+			)
+		displayFolder: 09 | Risk Scoring
+		lineageTag: 2810d59f-aa81-49de-aa4b-9918db1272f3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Persistence Risk Points' =
+			
+			IF(
+			    ISBLANK([Employee Fuel Risk Score]),
+			    BLANK(),
+			    ROUND(
+			        20 *
+			        MIN(
+			            1,
+			            MAX(
+			                0,
+			                COALESCE([Anomaly Day Rate (%)], 0)
+			            )
+			        ),
+			        1
+			    )
+			)
+		displayFolder: 09 | Risk Scoring
+		lineageTag: d870207e-4f27-4f19-8fcb-0380d06cf836
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Employee Risk Score (Scenario)' =
+			
+			VAR FrequencyWeight =
+			    SELECTEDVALUE(
+			        RiskScenario[FrequencyWeight],
+			        50
+			    )
+			
+			VAR SeverityWeight =
+			    SELECTEDVALUE(
+			        RiskScenario[SeverityWeight],
+			        30
+			    )
+			
+			VAR PersistenceWeight =
+			    SELECTEDVALUE(
+			        RiskScenario[PersistenceWeight],
+			        20
+			    )
+			
+			VAR FrequencyScore =
+			    MIN(
+			        1,
+			        MAX(
+			            0,
+			            COALESCE([Fuel Anomaly Rate (%)], 0)
+			        )
+			    )
+			
+			VAR SeverityScore =
+			    MIN(
+			        1,
+			        MAX(
+			            0,
+			            DIVIDE(
+			                COALESCE(
+			                    [Avg Flagged Fuel Deviation (%)],
+			                    0
+			                ),
+			                1.5,
+			                0
+			            )
+			        )
+			    )
+			
+			VAR PersistenceScore =
+			    MIN(
+			        1,
+			        MAX(
+			            0,
+			            COALESCE([Anomaly Day Rate (%)], 0)
+			        )
+			    )
+			
+			VAR FinalScore =
+			    FrequencyScore * FrequencyWeight
+			    + SeverityScore * SeverityWeight
+			    + PersistenceScore * PersistenceWeight
+			
+			RETURN
+			IF(
+			    HASONEVALUE(DimEmployee[id])
+			        && NOT ISBLANK([Employee Fuel Risk Score]),
+			    ROUND(FinalScore, 0),
+			    BLANK()
+			)
+		formatString: 0
+		displayFolder: 09 | Risk Scoring
+		lineageTag: 527ea316-eea6-4f4d-a7b4-c4dc825713f4
+
+	measure 'Risk Score Difference' =
+			
+			VAR BaselineScore =
+			    [Employee Fuel Risk Score]
+			
+			VAR ScenarioScore =
+			    [Employee Risk Score (Scenario)]
+			
+			RETURN
+			IF(
+			    ISBLANK(BaselineScore)
+			        || ISBLANK(ScenarioScore),
+			    BLANK(),
+			    ScenarioScore - BaselineScore
+			)
+		displayFolder: 09 | Risk Scoring
+		lineageTag: 9669caf5-c8da-473c-a71c-3484b2a5ad95
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Employees with Fuel Anomalies' =
+			
+			COALESCE(
+			    COUNTROWS(
+			        FILTER(
+			            VALUES(DimEmployee[id]),
+			            [Fuel Anomaly Trips] > 0
+			        )
+			    ),
+			    0
+			)
+		formatString: 0
+		displayFolder: 06 | Anomaly Detection
+		lineageTag: 56b7537a-120e-42c9-9bb8-6bec393ee9ed
+
+	measure 'Department Assessment Status' =
+			
+			VAR Trips =
+			    COALESCE([Total Trips], 0)
+			
+			VAR Assessed =
+			    [Assessed Trips]
+			
+			VAR Coverage =
+			    COALESCE(
+			        [Assessment Coverage (%)],
+			        0
+			    )
+			
+			RETURN
+			IF(
+			    NOT HASONEVALUE(DimEmployee[Recorded Department]),
+			    BLANK(),
+			    SWITCH(
+			        TRUE(),
+			
+			        Trips = 0,
+			            "No Trips",
+			
+			        Assessed = 0,
+			            "Not Assessable",
+			
+			        Assessed < 20
+			            || Coverage < 0.7,
+			            "Limited Coverage",
+			
+			        "Assessable"
+			    )
+			)
+		displayFolder: 08 | Data Quality
+		lineageTag: be3e4b5e-f273-4fcf-9c38-e18f037519e7
+
+	measure 'Employee Profile' =
+			
+			VAR EmployeeID =
+			    SELECTEDVALUE(
+			        DimEmployee[Employee Label]
+			    )
+			
+			VAR FirstName =
+			    SELECTEDVALUE(
+			        DimEmployee[name],
+			        ""
+			    )
+			
+			VAR LastName =
+			    SELECTEDVALUE(
+			        DimEmployee[surname],
+			        ""
+			    )
+			
+			VAR Department =
+			    SELECTEDVALUE(
+			        DimEmployee[Recorded Department],
+			        "Unknown"
+			    )
+			
+			RETURN
+			IF(
+			    HASONEVALUE(DimEmployee[id]),
+			    EmployeeID
+			        & " | "
+			        & FirstName
+			        & " "
+			        & LastName
+			        & " | Department: "
+			        & Department,
+			    "Select an employee from Employee Risk Ranking"
+			)
+		displayFolder: 09 | Risk Scoring
+		lineageTag: 286f8f8c-c37c-4e28-b5fe-9778030713d3
+
+	measure 'Trip Fuel Deviation (%)' =
+			
+			IF(
+			    HASONEVALUE(FactTrip[id]),
+			    MAX(FactTrip[FuelDeviationPct]),
+			    BLANK()
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 06 | Anomaly Detection
+		lineageTag: 68253ad4-2c72-4d76-93ac-54db8070e20d
+
+	measure 'Assessed Actual Fuel (L/100KM)' =
+			
+			VAR ComparableTrips =
+			    FILTER(
+			        FactTrip,
+			        NOT ISBLANK(FactTrip[PeerFuelBenchmarkTrip])
+			            && FactTrip[distance] > 0
+			    )
+			
+			VAR ActualFuel =
+			    SUMX(
+			        ComparableTrips,
+			        FactTrip[fuel]
+			    )
+			
+			VAR AssessedDistance =
+			    SUMX(
+			        ComparableTrips,
+			        FactTrip[distance]
+			    )
+			
+			RETURN
+			DIVIDE(
+			    ActualFuel * 100,
+			    AssessedDistance
+			)
+		formatString: 0.00
+		displayFolder: 05 | Statistical Analysis
+		lineageTag: 231ebb64-76d4-49f1-95a7-3a6e0cc7d182
+
+	measure 'Assessed Peer Benchmark (L/100KM)' =
+			
+			VAR ComparableTrips =
+			    FILTER(
+			        FactTrip,
+			        NOT ISBLANK(FactTrip[PeerFuelBenchmarkTrip])
+			            && FactTrip[distance] > 0
+			    )
+			
+			VAR ExpectedFuel =
+			    SUMX(
+			        ComparableTrips,
+			        FactTrip[distance]
+			            * FactTrip[PeerFuelBenchmarkTrip]
+			            / 100
+			    )
+			
+			VAR AssessedDistance =
+			    SUMX(
+			        ComparableTrips,
+			        FactTrip[distance]
+			    )
+			
+			RETURN
+			DIVIDE(
+			    ExpectedFuel * 100,
+			    AssessedDistance
+			)
+		formatString: 0.00
+		displayFolder: 05 | Statistical Analysis
+		lineageTag: 9c51a9fd-242a-4405-8783-51c9c0a34aa6
+
+	measure 'Vehicle Fuel Deviation (%)' =
+			
+			VAR ActualConsumption =
+			    [Assessed Actual Fuel (L/100KM)]
+			
+			VAR BenchmarkConsumption =
+			    [Assessed Peer Benchmark (L/100KM)]
+			
+			RETURN
+			DIVIDE(
+			    ActualConsumption - BenchmarkConsumption,
+			    BenchmarkConsumption
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 05 | Statistical Analysis
+		lineageTag: 2cee24f6-9a44-406c-9b08-94a86a7153c4
+
+	measure 'Route Pairs Used' =
+			
+			COALESCE(
+			    COUNTROWS(
+			        FILTER(
+			            VALUES(DimRoute[RoutePairKey]),
+			            [Total Trips] > 0
+			        )
+			    ),
+			    0
+			)
+		formatString: 0
+		displayFolder: 07 | Route & Mileage Metrics
+		lineageTag: 5047d191-2c2e-4e7d-8e3c-87de857f3701
+
+	measure 'Median Trip Distance (KM)' =
+			
+			MEDIAN(
+			    FactTrip[distance]
+			)
+		formatString: 0.0
+		displayFolder: 07 | Route & Mileage Metrics
+		lineageTag: 9e1459ef-e70f-44d8-a90e-4077ab677312
+
+	measure 'P95 Trip Distance (KM)' =
+			
+			PERCENTILEX.INC(
+			    FactTrip,
+			    FactTrip[distance],
+			    0.95
+			)
+		formatString: 0.0
+		displayFolder: 07 | Route & Mileage Metrics
+		lineageTag: 30c6a81f-ba32-4dfb-8f55-534286bba3e7
+
+	measure 'Route Distance Spread (%)' =
+			
+			VAR RouteTrips =
+			    [Total Trips]
+			
+			VAR MedianDistance =
+			    [Median Trip Distance (KM)]
+			
+			VAR P95Distance =
+			    [P95 Trip Distance (KM)]
+			
+			RETURN
+			IF(
+			    HASONEVALUE(DimRoute[RoutePairKey])
+			        && RouteTrips >= 20
+			        && MedianDistance > 0,
+			    DIVIDE(
+			        P95Distance - MedianDistance,
+			        MedianDistance
+			    ),
+			    BLANK()
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 07 | Route & Mileage Metrics
+		lineageTag: 2ae56314-5b9c-47c1-bf1f-3c8b8d35fb00
+
+	measure 'Mileage Assessed Trips' =
+			
+			COALESCE(
+			    COUNTROWS(
+			        FILTER(
+			            FactTrip,
+			            NOT ISBLANK(
+			                FactTrip[PeerDistanceBenchmarkTrip]
+			            )
+			        )
+			    ),
+			    0
+			)
+		formatString: 0
+		displayFolder: 07 | Route & Mileage Metrics
+		lineageTag: 379e6c27-e5d1-4cba-b3e5-ff32afcf3e65
+
+	measure 'Mileage Assessment Coverage (%)' =
+			
+			DIVIDE(
+			    [Mileage Assessed Trips],
+			    [Total Trips]
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 07 | Route & Mileage Metrics
+		lineageTag: d2130526-3d9f-4969-8e81-2b840f4459a0
+
+	measure 'Max Mileage Deviation (%)' =
+			
+			MAX(
+			    FactTrip[MileageDeviationPct]
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 07 | Route & Mileage Metrics
+		lineageTag: b3bdf56b-3037-4d19-b55b-2e8048368208
+
+	measure 'Min Mileage Deviation (%)' =
+			
+			MIN(
+			    FactTrip[MileageDeviationPct]
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 07 | Route & Mileage Metrics
+		lineageTag: 03ae75f9-e4c1-4222-afb4-e839be68e3ca
+
+	measure 'Mileage Consistency Summary' =
+			
+			VAR Total =
+			    [Total Trips]
+			
+			VAR Assessed =
+			    [Mileage Assessed Trips]
+			
+			VAR Coverage =
+			    [Mileage Assessment Coverage (%)]
+			
+			VAR MinDeviation =
+			    [Min Mileage Deviation (%)]
+			
+			VAR MaxDeviation =
+			    [Max Mileage Deviation (%)]
+			
+			RETURN
+			IF(
+			    Assessed = 0,
+			    "No assessed trips available for mileage comparison.",
+			    "Assessed trips: "
+			        & FORMAT(Assessed, "#,0")
+			        & " / "
+			        & FORMAT(Total, "#,0")
+			        & " ("
+			        & FORMAT(Coverage, "0.0%")
+			        & "). Observed mileage deviations: "
+			        & FORMAT(MinDeviation, "0.0%")
+			        & " to "
+			        & IF(MaxDeviation > 0, "+", "")
+			        & FORMAT(MaxDeviation, "0.0%")
+			        & "."
+			)
+		displayFolder: 07 | Route & Mileage Metrics
+		lineageTag: bf2686ce-1dd4-411f-9d38-5713ee1dc870
+
+	measure 'Weekday Trips' =
+			
+			[Total Trips] - [Weekend Trips]
+		formatString: 0
+		displayFolder: 04 | Behavior Metrics
+		lineageTag: 5b13139a-6c0b-4d7e-9a4f-7f3861c1fb7d
+
+	measure 'Weekend Drivers' =
+			
+			COALESCE(
+			    CALCULATE(
+			        DISTINCTCOUNT(FactTrip[employee_id]),
+			        KEEPFILTERS(
+			            DimDate[Day Type] = "Weekend"
+			        )
+			    ),
+			    0
+			)
+		formatString: 0
+		displayFolder: 04 | Behavior Metrics
+		lineageTag: 57609df4-4c2d-4670-8fb4-c8d22be6bc12
+
+	measure 'Avg Trips per Used Vehicle' =
+			
+			DIVIDE(
+			    [Total Trips],
+			    [Vehicles Used]
+			)
+		formatString: 0.0
+		displayFolder: 03 | Fleet Metrics
+		lineageTag: 37f9608f-fda3-46f5-aa52-d463fc3d2faf
+
+	measure 'Avg Distance per Used Vehicle (KM)' =
+			
+			DIVIDE(
+			    [Total Distance (KM)],
+			    [Vehicles Used]
+			)
+		formatString: 0.0
+		displayFolder: 03 | Fleet Metrics
+		lineageTag: 241e6d9b-a1a7-4819-925c-8892c63fb452
+
+	measure 'Active Trip Days' =
+			
+			COUNTROWS(
+			    FILTER(
+			        VALUES(DimDate[Date]),
+			        [Total Trips] > 0
+			    )
+			)
+		formatString: 0
+		displayFolder: 03 | Fleet Metrics
+		lineageTag: f078518a-6db6-427a-818f-00e34e2280a8
+
+	measure 'Trips per Active Day' =
+			
+			DIVIDE(
+			    [Total Trips],
+			    [Active Trip Days]
+			)
+		formatString: 0.00
+		displayFolder: 03 | Fleet Metrics
+		lineageTag: 5b2122ad-ed7a-4fa6-9db6-205630c7c729
+
+	measure 'Flagged Actual Fuel (L)' =
+			
+			VAR FlaggedTrips =
+			    FILTER(
+			        FactTrip,
+			        FactTrip[FuelAnomalyFlag] = 1
+			            && NOT ISBLANK(FactTrip[PeerFuelBenchmarkTrip])
+			            && FactTrip[distance] > 0
+			    )
+			
+			RETURN
+			COALESCE(
+			    SUMX(
+			        FlaggedTrips,
+			        FactTrip[fuel]
+			    ),
+			    0
+			)
+		formatString: 0.00
+		displayFolder: 10 | Financial Exposure
+		lineageTag: 42c2ce01-1548-4051-ab8b-fa5796f63663
+
+	measure 'Flagged Benchmark Fuel (L)' =
+			
+			VAR FlaggedTrips =
+			    FILTER(
+			        FactTrip,
+			        FactTrip[FuelAnomalyFlag] = 1
+			            && NOT ISBLANK(FactTrip[PeerFuelBenchmarkTrip])
+			            && FactTrip[distance] > 0
+			    )
+			
+			RETURN
+			COALESCE(
+			    SUMX(
+			        FlaggedTrips,
+			        FactTrip[distance]
+			            * FactTrip[PeerFuelBenchmarkTrip]
+			            / 100
+			    ),
+			    0
+			)
+		formatString: 0.00
+		displayFolder: 10 | Financial Exposure
+		lineageTag: e788bf3d-657e-4ac7-9834-497ea5661aad
+
+	measure 'Estimated Excess Fuel (L)' =
+			
+			VAR ActualFuel =
+			    [Flagged Actual Fuel (L)]
+			
+			VAR BenchmarkFuel =
+			    [Flagged Benchmark Fuel (L)]
+			
+			RETURN
+			MAX(
+			    0,
+			    ActualFuel - BenchmarkFuel
+			)
+		formatString: 0.00
+		displayFolder: 10 | Financial Exposure
+		lineageTag: a3a8cc31-824c-4b10-83f0-ee6eaf3ffdfe
+
+	measure 'Estimated Excess Fuel Share (%)' =
+			
+			DIVIDE(
+			    [Estimated Excess Fuel (L)],
+			    [Flagged Actual Fuel (L)]
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 10 | Financial Exposure
+		lineageTag: 56c8a89b-728c-4a80-b7c3-483a323d8ba5
+
+	measure 'Selected Fuel Price (PLN/L)' =
+			
+			SELECTEDVALUE(
+			    'Fuel Price Scenario'[Fuel Price Scenario],
+			    6.50
+			)
+		formatString: 0.00
+		displayFolder: Folder: 10 | Financial Exposure
+		lineageTag: 7ef7ee94-d677-4956-bb43-cfbbfee438bb
+
+	measure 'Estimated Financial Exposure (PLN)' =
+			
+			[Estimated Excess Fuel (L)]
+			    * [Selected Fuel Price (PLN/L)]
+		formatString: #,0.00\ "zł";-#,0.00\ "zł";#,0.00\ "zł"
+		displayFolder: 10 | Financial Exposure
+		lineageTag: 9aedbf6f-79f8-4478-8747-a05cd2af4668
+
+		annotation PBI_FormatHint = {"currencyCulture":"pl-PL"}
+
+	measure 'Future-Dated Trips' =
+			
+			COALESCE(
+			    COUNTROWS(
+			        FILTER(
+			            FactTrip,
+			            FactTrip[start] >= TODAY() + 1
+			        )
+			    ),
+			    0
+			)
+		formatString: 0
+		displayFolder: 08 | Data Quality
+		lineageTag: 8f531108-9e27-4434-a2f6-73a6bafe7e0a
+
+	measure 'Recorded Trips by Period' =
+			
+			COALESCE(
+			    [Total Trips],
+			    0
+			)
+		formatString: 0
+		displayFolder: 08 | Data Quality
+		lineageTag: 8b417e37-ccbd-44cb-a16d-3c6605484d32
+
+	measure 'Fuel Anomaly Tooltip Label' =
+			
+			"Fuel Anomaly Detection"
+		displayFolder: 08 | Data Quality
+		lineageTag: 524f335d-7206-4530-bc1d-45241e785ee9
+
+	measure 'Mileage Tooltip Label' =
+			
+			"Mileage Consistency"
+		displayFolder: 08 | Data Quality
+		lineageTag: f4e81d97-b262-40fb-b4cf-5b205e585486
+
+	measure 'Risk Scoring Tooltip Label' =
+			
+			"Employee Risk Scoring"
+		displayFolder: 08 | Data Quality
+		lineageTag: 4ceacfbb-7348-4648-b21b-cb518d80fe20
+
+	measure 'Data Availability Tooltip Label' =
+			
+			"Data Availability"
+		displayFolder: 08 | Data Quality
+		lineageTag: 19c9ec51-edea-4838-8307-b585e5e9a08a
+
+	measure 'Benchmark Coverage Tooltip Label' =
+			
+			"Benchmark Coverage"
+		displayFolder: 08 | Data Quality
+		lineageTag: ff7504b1-2350-4f3b-b465-67590af5bfd1
+
+	measure 'Source Data Tooltip Label' =
+			
+			"Source Data"
+		displayFolder: 08 | Data Quality
+		lineageTag: 95b8c32d-83ec-4136-8c4e-74c6a5cda4cf
+
+	measure 'Financial Estimates Tooltip Label' =
+			
+			"Financial Estimates"
+		displayFolder: 08 | Data Quality
+		lineageTag: 5947cc2b-ba94-4b34-9bfc-f527300c8c85
+
+	column Placeholder
+		isHidden
+		formatString: 0
+		displayFolder: 05 | Statistical Analysis
+		lineageTag: 0a3f4bd5-da1d-4c74-a0c9-5f6f7f1d243a
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Placeholder]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition _Measures = calculated
+		mode: import
+		source =
+				
+				ROW(
+				    "Placeholder", BLANK()
+				)
+
+	annotation PBI_Id = 306549f200304206bb247752cc28d3e5
+

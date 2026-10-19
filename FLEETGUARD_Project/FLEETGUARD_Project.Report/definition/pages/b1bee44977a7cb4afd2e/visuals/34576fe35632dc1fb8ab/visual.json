@@ -1,0 +1,53 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "34576fe35632dc1fb8ab",
+  "position": {
+    "x": 15.714285714285715,
+    "y": 37.142857142857146,
+    "z": 1,
+    "height": 164.28571428571431,
+    "width": 288.57142857142861,
+    "tabOrder": 1
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "The audit-priority score combines anomaly frequency (50%), severity (30%), and persistence (20%). A valid score requires at least 20 assessed trips and 70% assessment coverage. The score does not represent the probability of fraud.",
+                    "textStyle": {
+                      "fontSize": "12pt",
+                      "color": "#f1f5f9"
+                    }
+                  }
+                ],
+                "horizontalTextAlignment": "center"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

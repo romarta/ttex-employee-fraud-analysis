@@ -1,0 +1,213 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "480b34e34dfc63910e76",
+  "position": {
+    "x": 0,
+    "y": 452.69672855879753,
+    "z": 4000,
+    "height": 235.40229885057474,
+    "width": 1280,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTrip"
+                    }
+                  },
+                  "Property": "id"
+                }
+              },
+              "queryRef": "FactTrip.id",
+              "nativeQueryRef": "id"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTrip"
+                    }
+                  },
+                  "Property": "start"
+                }
+              },
+              "queryRef": "FactTrip.start",
+              "nativeQueryRef": "start"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTrip"
+                    }
+                  },
+                  "Property": "employee_id"
+                }
+              },
+              "queryRef": "FactTrip.employee_id",
+              "nativeQueryRef": "employee_id"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTrip"
+                    }
+                  },
+                  "Property": "car_id"
+                }
+              },
+              "queryRef": "FactTrip.car_id",
+              "nativeQueryRef": "car_id"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimRoute"
+                    }
+                  },
+                  "Property": "RoutePairKey"
+                }
+              },
+              "queryRef": "DimRoute.RoutePairKey",
+              "nativeQueryRef": "RoutePairKey"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTrip"
+                    }
+                  },
+                  "Property": "distance"
+                }
+              },
+              "queryRef": "Sum(FactTrip.distance)",
+              "nativeQueryRef": "distance"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTrip"
+                    }
+                  },
+                  "Property": "FuelPer100KM"
+                }
+              },
+              "queryRef": "FactTrip.FuelPer100KM",
+              "nativeQueryRef": "FuelPer100KM"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTrip"
+                    }
+                  },
+                  "Property": "PeerFuelBenchmarkTrip"
+                }
+              },
+              "queryRef": "FactTrip.PeerFuelBenchmarkTrip",
+              "nativeQueryRef": "PeerFuelBenchmarkTrip"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTrip"
+                    }
+                  },
+                  "Property": "FuelDeviationPct"
+                }
+              },
+              "queryRef": "Sum(FactTrip.FuelDeviationPct)",
+              "nativeQueryRef": "FuelDeviationPct"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTrip"
+                    }
+                  },
+                  "Property": "FuelRiskCategory"
+                }
+              },
+              "queryRef": "FactTrip.FuelRiskCategory",
+              "nativeQueryRef": "FuelRiskCategory"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactTrip"
+                    }
+                  },
+                  "Property": "FuelAnomalyFlag"
+                }
+              },
+              "queryRef": "Sum(FactTrip.FuelAnomalyFlag)",
+              "nativeQueryRef": "FuelAnomalyFlag"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Trip-Level Benchmark Validation'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

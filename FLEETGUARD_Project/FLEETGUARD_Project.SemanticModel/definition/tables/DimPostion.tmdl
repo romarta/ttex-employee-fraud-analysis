@@ -1,0 +1,44 @@
+table DimPostion
+	lineageTag: 4d14189e-1904-4ea2-9050-ff24eaa91ac8
+
+	column id
+		dataType: int64
+		formatString: 0
+		lineageTag: cbae796a-5de2-4f82-8385-7c9fd3892fab
+		summarizeBy: none
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column name
+		dataType: string
+		lineageTag: c9ecc328-36a2-48af-90d7-0cd2ebf98230
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimPostion = m
+		mode: import
+		source =
+				let
+				    Zrodlo = Pliki_Baza,
+				
+				    Filtrowanie = Table.SelectRows(
+				        Zrodlo,
+				        each [Nazwa_arkusza] = "Positon"
+				    ),
+				
+				    Tabele = Filtrowanie[Dane_przygotowane],
+				
+				    Polaczone = Table.Combine(Tabele),
+				    #"Usunięto duplikaty" = Table.Distinct(Polaczone),
+				    #"Zmieniono typ" = Table.TransformColumnTypes(#"Usunięto duplikaty",{{"id", Int64.Type}, {"name", type text}})
+				
+				in
+				    #"Zmieniono typ"
+
+	annotation PBI_NavigationStepName = Nawigacja
+
+	annotation PBI_ResultType = Table
+

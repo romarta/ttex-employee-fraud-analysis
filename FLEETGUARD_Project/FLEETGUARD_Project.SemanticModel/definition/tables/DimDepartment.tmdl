@@ -1,0 +1,52 @@
+table DimDepartment
+	lineageTag: edfb5455-47b9-4a0d-8052-30bead3ec7ec
+
+	column id
+		dataType: int64
+		formatString: 0
+		lineageTag: 21d59793-e3f5-44ff-8095-fbf7b2ef7035
+		summarizeBy: none
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column name
+		dataType: string
+		lineageTag: 013924f2-4325-4d88-a497-daabceaaba8f
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
+
+	column description
+		dataType: string
+		lineageTag: 67ce1ccf-7c05-48a2-9ec2-1b92e7c456d6
+		summarizeBy: none
+		sourceColumn: description
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimDepartment = m
+		mode: import
+		source =
+				let
+				    Zrodlo = Pliki_Baza,
+				
+				    Filtrowanie = Table.SelectRows(
+				        Zrodlo,
+				        each [Nazwa_arkusza] = "Department"
+				    ),
+				
+				    Tabele = Filtrowanie[Dane_przygotowane],
+				
+				    Polaczone = Table.Combine(Tabele),
+				    #"Usunięto duplikaty" = Table.Distinct(Polaczone),
+				    #"Zmieniono typ" = Table.TransformColumnTypes(#"Usunięto duplikaty",{{"id", Int64.Type}, {"name", type text}, {"description", type text}})
+				
+				in
+				    #"Zmieniono typ"
+
+	annotation PBI_NavigationStepName = Nawigacja
+
+	annotation PBI_ResultType = Table
+

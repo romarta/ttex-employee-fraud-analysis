@@ -1,0 +1,57 @@
+table RiskScenario
+	lineageTag: e142d806-d38a-4451-ace1-8e356c892f08
+
+	column Scenario
+		lineageTag: c3b5eefe-ea66-4128-ad84-fbe805c9f12b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Scenario]
+
+		annotation SummarizationSetBy = Automatic
+
+	column FrequencyWeight
+		formatString: 0
+		lineageTag: c5b05617-7432-4626-a7d6-7f92a3ead2b8
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [FrequencyWeight]
+
+		annotation SummarizationSetBy = Automatic
+
+	column SeverityWeight
+		formatString: 0
+		lineageTag: 1d8517f4-883a-4e90-a544-6d291ed87a79
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [SeverityWeight]
+
+		annotation SummarizationSetBy = Automatic
+
+	column PersistenceWeight
+		formatString: 0
+		lineageTag: 41cdf0ba-f49a-4249-b150-23b6706e6ba4
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [PersistenceWeight]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition RiskScenario = calculated
+		mode: import
+		source =
+				
+				DATATABLE(
+				    "Scenario", STRING,
+				    "FrequencyWeight", INTEGER,
+				    "SeverityWeight", INTEGER,
+				    "PersistenceWeight", INTEGER,
+				    {
+				        {"Baseline", 50, 30, 20},
+				        {"Balanced", 34, 33, 33},
+				        {"Severity Focus", 10, 80, 10},
+				        {"Frequency Focus", 70, 20, 10}
+				    }
+				)
+
+	annotation PBI_Id = 75f76bfc99e54b9f9b3e18a9f605122f
+

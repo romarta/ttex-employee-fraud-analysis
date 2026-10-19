@@ -1,0 +1,60 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmarksMetadata/1.0.0/schema.json",
+  "items": [
+    {
+      "name": "db846655d2feac003a3c"
+    },
+    {
+      "name": "c105e47b25536b9e04a2",
+      "displayName": "EMPLOYEE INV",
+      "children": [
+        "48549efcb33e342bfb34",
+        "1d339b10605f17fedbde"
+      ]
+    },
+    {
+      "name": "76f4c4d5ac72865012eb",
+      "displayName": "AUD | Fuel Audit Views",
+      "children": [
+        "e969b7601f371e7a4b88",
+        "9f016b8a9453e2a91d7d",
+        "0796b1a44a3b17c4d725"
+      ]
+    },
+    {
+      "name": "c5d314233d81ea074bd6",
+      "displayName": "BEH | Travel Views",
+      "children": [
+        "479881a4c3baabfed4bc",
+        "1d947529e9982e185805"
+      ]
+    },
+    {
+      "name": "cde1a4abebb626a59214",
+      "displayName": "FIN | Exposure Views",
+      "children": [
+        "04b3604090c972928e00",
+        "13531eb05ad874bb8b78",
+        "2992bacb5d75265ce9c4"
+      ]
+    },
+    {
+      "name": "408a83baef791cccebff"
+    },
+    {
+      "name": "80b7046221f897a8b4e0"
+    },
+    {
+      "name": "fc98755751471c601a01"
+    },
+    {
+      "name": "0fbb78402c40791a36bd"
+    },
+    {
+      "name": "a39fe8b60799a7a03ba9"
+    },
+    {
+      "name": "35a1b684553667931fd0"
+    }
+  ]
+}

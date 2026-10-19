@@ -1,0 +1,18 @@
+expression Pliki_Baza =
+		let
+		    Źródło = Folder.Files("C:\Users\marta\OneDrive\Desktop\ANALIZA I INŻYNIERIA DANYCH\Analiza danych w praktyce\ttex-employee-fraud-analysis\data"),
+		    #"Dodano kolumnę niestandardową" = Table.AddColumn(Źródło, "Arkusze", each Excel.Workbook([Content], null, true)),
+		    #"Rozwinięty element Arkusze" = Table.ExpandTableColumn(#"Dodano kolumnę niestandardową", "Arkusze", {"Name", "Data", "Kind"}, {"Arkusze.Name", "Arkusze.Data", "Arkusze.Kind"}),
+		    #"Zmieniono nazwy kolumn" = Table.RenameColumns(#"Rozwinięty element Arkusze",{{"Arkusze.Name", "Nazwa_arkusza"}}),
+		    #"Dodano kolumnę niestandardową1" = Table.AddColumn(#"Zmieniono nazwy kolumn", "Dane_przygotowane", each Table.PromoteHeaders(
+		    [Arkusze.Data],
+		    [PromoteAllScalars = true]
+		))
+		in
+		    #"Dodano kolumnę niestandardową1"
+	lineageTag: d19286c4-cdfc-432e-bb7d-d03785d93e0c
+
+	annotation PBI_NavigationStepName = Nawigacja
+
+	annotation PBI_ResultType = Table
+

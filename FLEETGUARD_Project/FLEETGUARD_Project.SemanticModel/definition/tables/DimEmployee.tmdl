@@ -1,0 +1,140 @@
+table DimEmployee
+	lineageTag: 1f953893-2c16-4db2-bc9f-cbd933ba4dd9
+
+	column id
+		dataType: int64
+		formatString: 0
+		lineageTag: b003a359-3e83-428d-a01e-bb0f73a73340
+		summarizeBy: none
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column name
+		dataType: string
+		lineageTag: 71a8643a-0323-4f18-a3b4-db37cfc557cf
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
+
+	column surname
+		dataType: string
+		lineageTag: c41ed56c-b2f2-4079-a7c1-0d671a3c714e
+		summarizeBy: none
+		sourceColumn: surname
+
+		annotation SummarizationSetBy = Automatic
+
+	column gender
+		dataType: string
+		lineageTag: 31de43cd-c7ca-4287-b7dc-ee038f5fddfe
+		summarizeBy: none
+		sourceColumn: gender
+
+		annotation SummarizationSetBy = Automatic
+
+	column department_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 813eefc8-6a8c-46c7-b9cb-dc27c88a2ddd
+		summarizeBy: none
+		sourceColumn: department_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column position_id
+		dataType: int64
+		formatString: 0
+		lineageTag: d628cf6e-9c8a-4b64-806a-c54ac3d412d1
+		summarizeBy: none
+		sourceColumn: position_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column year_of_birth
+		dataType: int64
+		formatString: 0
+		lineageTag: 38c35914-10a6-4212-811d-2b51f484ae39
+		summarizeBy: sum
+		sourceColumn: year_of_birth
+
+		annotation SummarizationSetBy = Automatic
+
+	column date_of_employment
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 0cb20ffb-a7c0-4192-83e8-fd7aa146758e
+		summarizeBy: none
+		sourceColumn: date_of_employment
+
+		variation Odmiana
+			isDefault
+			relationship: 2d889279-2137-454f-8c91-93aba151d15f
+			defaultHierarchy: LocalDateTable_95465307-a608-477e-8f21-3729c56c13b4.'Hierarchia dat'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column employment_end_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 2a7ac910-be26-4d22-8013-1136f4f0a55b
+		summarizeBy: none
+		sourceColumn: employment_end_date
+
+		variation Odmiana
+			isDefault
+			relationship: 06e7c1bb-f3ec-4396-b55d-40783b1d930d
+			defaultHierarchy: LocalDateTable_37a0bb83-0365-4541-8331-b5ec5b712bbe.'Hierarchia dat'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Employee Label' =
+			
+			"EMP-" & FORMAT(DimEmployee[id], "000")
+		lineageTag: 7c6986eb-4c4c-4258-be17-952e9c83dc8c
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Recorded Department' =
+			
+			COALESCE(
+			    RELATED(DimDepartment[name]),
+			    "Unknown"
+			)
+		lineageTag: 70dbd6ff-0048-414c-8464-46610631537c
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimEmployee = m
+		mode: import
+		source =
+				let
+				    Zrodlo = Pliki_Baza,
+				
+				    Filtrowanie = Table.SelectRows(
+				        Zrodlo,
+				        each [Nazwa_arkusza] = "Employee"
+				    ),
+				
+				    Tabele = Filtrowanie[Dane_przygotowane],
+				
+				    Polaczone = Table.Combine(Tabele),
+				    #"Usunięto duplikaty" = Table.Distinct(Polaczone),
+				    #"Zmieniono typ" = Table.TransformColumnTypes(#"Usunięto duplikaty",{{"id", Int64.Type}, {"name", type text}, {"surname", type text}, {"gender", type text}, {"department", Int64.Type}, {"position", Int64.Type}, {"year_of_birth", Int64.Type}, {"date_of_employment", type date}, {"employment_end_date", type date}}),
+				    #"Usunięto puste wiersze" = Table.SelectRows(#"Zmieniono typ", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+				    #"Zmieniono nazwy kolumn" = Table.RenameColumns(#"Usunięto puste wiersze",{{"department", "department_id"}, {"position", "position_id"}})
+				
+				in
+				    #"Zmieniono nazwy kolumn"
+
+	annotation PBI_NavigationStepName = Nawigacja
+
+	annotation PBI_ResultType = Table
+

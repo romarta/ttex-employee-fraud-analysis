@@ -1,0 +1,97 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "ed0303b7e2b56cd3c90e",
+  "position": {
+    "x": 480.32454361054772,
+    "y": 46.7342799188641,
+    "z": 1000,
+    "height": 218.09330628803247,
+    "width": 629.61460446247463,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimEmployee"
+                    }
+                  },
+                  "Property": "Employee Label"
+                }
+              },
+              "queryRef": "DimEmployee.Employee Label",
+              "nativeQueryRef": "Employee Label"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Employee Fuel Risk Score"
+                }
+              },
+              "queryRef": "_Measures.Employee Fuel Risk Score",
+              "nativeQueryRef": "Employee Fuel Risk Score"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Employee Risk Score (Scenario)"
+                }
+              },
+              "queryRef": "_Measures.Employee Risk Score (Scenario)",
+              "nativeQueryRef": "Employee Risk Score (Scenario)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Risk Score Difference"
+                }
+              },
+              "queryRef": "_Measures.Risk Score Difference",
+              "nativeQueryRef": "Risk Score Difference"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "_Measures"
+                  }
+                },
+                "Property": "Employee Risk Score (Scenario)"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

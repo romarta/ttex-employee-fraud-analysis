@@ -1,0 +1,152 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 690.75179818143783,
+            "y": 0
+          },
+          "nodeIndex": "DimDate",
+          "nodeLineageTag": "55081402-481a-4b9b-8ad2-3d7123530a22",
+          "size": {
+            "height": 417.50685664327682,
+            "width": 234
+          },
+          "zIndex": 8
+        },
+        {
+          "location": {
+            "x": 270.77604585507657,
+            "y": 0
+          },
+          "nodeIndex": "FactTrip",
+          "nodeLineageTag": "0a1a1858-ad1d-472d-b9a8-f62290f31eea",
+          "size": {
+            "height": 344,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 251.16917911380057
+          },
+          "nodeIndex": "DimCar",
+          "nodeLineageTag": "0810a113-5cb6-45fe-b3f1-e60837e021c5",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 7
+        },
+        {
+          "location": {
+            "x": 428.99265846608387,
+            "y": 431.32298612202567
+          },
+          "nodeIndex": "DimEmployee",
+          "nodeLineageTag": "1f953893-2c16-4db2-bc9f-cbd933ba4dd9",
+          "size": {
+            "height": 333,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 826.42034615925127,
+            "y": 446.719961268043
+          },
+          "nodeIndex": "DimDepartment",
+          "nodeLineageTag": "edfb5455-47b9-4a0d-8052-30bead3ec7ec",
+          "size": {
+            "height": 158.3635080924218,
+            "width": 234
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 811.922969852448,
+            "y": 651.65414735728757
+          },
+          "nodeIndex": "DimPostion",
+          "nodeLineageTag": "4d14189e-1904-4ea2-9050-ff24eaa91ac8",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 1099.2086525178454,
+            "y": 0
+          },
+          "nodeIndex": "_Measures",
+          "nodeLineageTag": "27e6f3e8-2ae9-430d-9633-3860f6ca9209",
+          "size": {
+            "height": 777.82560981522226,
+            "width": 234
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 17.624358440748466,
+            "y": 595.01286240141121
+          },
+          "nodeIndex": "DimRoute",
+          "nodeLineageTag": "81c1a3ee-8d63-4e2c-9d65-36fdec8278aa",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 1371.5606580520075,
+            "y": 0
+          },
+          "nodeIndex": "RiskScenario",
+          "nodeLineageTag": "e142d806-d38a-4451-ace1-8e356c892f08",
+          "size": {
+            "height": 183.081986593622,
+            "width": 234
+          },
+          "zIndex": 9
+        },
+        {
+          "location": {
+            "x": 1372.7881482596895,
+            "y": 228.69975798528816
+          },
+          "nodeIndex": "Fuel Price Scenario",
+          "nodeLineageTag": "1f655daf-69dc-4931-a161-31486195b4ef",
+          "size": {
+            "height": 145,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "Wszystkie tabele",
+      "zoomValue": 90,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "Wszystkie tabele",
+  "defaultDiagram": "Wszystkie tabele"
+}

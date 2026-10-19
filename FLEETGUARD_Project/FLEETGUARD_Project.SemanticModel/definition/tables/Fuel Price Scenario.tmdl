@@ -1,0 +1,28 @@
+table 'Fuel Price Scenario'
+	lineageTag: 1f655daf-69dc-4931-a161-31486195b4ef
+
+	measure 'Fuel Price Scenario — wartość' = SELECTEDVALUE('Fuel Price Scenario'[Fuel Price Scenario], 6.5)
+		lineageTag: 842e0693-1968-4f51-a7f7-d432be176570
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Fuel Price Scenario'
+		lineageTag: 4de3e520-65d0-4d57-8cc7-d0305d0bfe51
+		summarizeBy: none
+		sourceColumn: [Value]
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 0
+				}
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'Fuel Price Scenario' = calculated
+		mode: import
+		source = GENERATESERIES(4, 10, 0.01)
+
+	annotation PBI_Id = e5de8c9b11d8478687ce596da466b445
+
